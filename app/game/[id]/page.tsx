@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-export const runtime = "edge";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -92,7 +90,8 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
   );
 }
 
-export default function GamePage({ params }: { params: { id: string } }) {
+export default function GamePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const [game, setGame] = useState<GameState | null>(null);
   const [movie, setMovie] = useState("");
   const [nextActor, setNextActor] = useState("");
@@ -104,10 +103,10 @@ export default function GamePage({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`${API}/game/${params.id}`)
+    fetch(`${API}/game/${id}`)
       .then((r) => r.json())
       .then(setGame);
-  }, [params.id]);
+  }, [id]);
 
   // Focus movie input when game loads
   useEffect(() => {
@@ -121,7 +120,7 @@ export default function GamePage({ params }: { params: { id: string } }) {
     setError(null);
 
     try {
-      const res = await fetch(`${API}/game/${params.id}/move`, {
+      const res = await fetch(`${API}/game/${id}/move`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movie, next_actor: nextActor }),

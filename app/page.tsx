@@ -4,8 +4,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-export const runtime = "edge";
-
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 const DIFFICULTY_DESCRIPTIONS = {
