@@ -9,7 +9,6 @@ out/
 build/
 
 # env files
-.env*.local
 .env.production
 
 # debug
