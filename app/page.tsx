@@ -101,7 +101,7 @@ export default function Home() {
               Casting...
             </span>
           ) : (
-            "Roll Film"
+            "Start the Game"
           )}
         </motion.button>
 
