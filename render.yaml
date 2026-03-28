@@ -1,0 +1,11 @@
+services:
+  # Next.js frontend — free Static Site (always on, no spin down)
+  - type: web
+    name: cinema-game-frontend
+    runtime: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false  # set to your backend's Render URL in the dashboard
