@@ -31,7 +31,8 @@ interface GameState {
   min_moves: number;
   current_actor: Actor;
   moves: Move[];
-  status: "in_progress" | "won";
+  status: "in_progress" | "won" | "lost";
+  strikes: number;
 }
 
 function FilmFrame({ children }: { children: React.ReactNode }) {
@@ -53,7 +54,17 @@ function FilmFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-function MoveCard({ move, index }: { move: Move; index: number }) {
+function MoveCard({
+  move,
+  index,
+  isLast,
+  onUndo,
+}: {
+  move: Move;
+  index: number;
+  isLast: boolean;
+  onUndo?: () => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -74,7 +85,7 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
           <span className="text-white/20 text-xs">?</span>
         </div>
       )}
-      <div className="min-w-0 text-xs leading-relaxed">
+      <div className="min-w-0 text-xs leading-relaxed flex-1">
         <span className="text-white/50">{move.from_actor}</span>
         <span className="text-cinema-gold mx-1.5">→</span>
         <span className="text-white font-medium italic">
@@ -86,7 +97,33 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
         <span className="text-cinema-gold mx-1.5">→</span>
         <span className="text-white/50">{move.to_actor}</span>
       </div>
+      {isLast && onUndo && (
+        <button
+          onClick={onUndo}
+          className="flex-shrink-0 text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
+          title="Undo last move"
+        >
+          ↩
+        </button>
+      )}
     </motion.div>
+  );
+}
+
+function StrikeCounter({ strikes }: { strikes: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <span
+          key={i}
+          className={`text-base leading-none ${
+            i < strikes ? "text-red-500" : "text-white/20"
+          }`}
+        >
+          {i < strikes ? "●" : "○"}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -99,6 +136,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   const [error, setError] = useState<string | null>(null);
   const [backdrop, setBackdrop] = useState<string | null>(null);
   const [flashTitle, setFlashTitle] = useState<string | null>(null);
+  const [showStrikeFlash, setShowStrikeFlash] = useState(false);
   const movieRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -128,7 +166,15 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
       const data = await res.json();
 
       if (!data.valid) {
-        setError(data.explanation);
+        // Flash large ✕ for 1.5s, then show strike count + error
+        setShowStrikeFlash(true);
+        setTimeout(() => {
+          setShowStrikeFlash(false);
+          setError(data.explanation);
+          setGame((g) =>
+            g ? { ...g, strikes: data.strikes, status: data.game_status } : g
+          );
+        }, 1500);
       } else {
         // Reveal backdrop
         if (data.backdrop_url) {
@@ -153,6 +199,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                 current_actor: data.current_actor,
                 moves: [...g.moves, move],
                 status: data.game_status,
+                strikes: data.strikes,
               }
             : g
         );
@@ -160,6 +207,30 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         setNextActor("");
         setTimeout(() => movieRef.current?.focus(), 50);
       }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function undoMove() {
+    if (!game || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/game/${id}/move`, { method: "DELETE" });
+      const data = await res.json();
+      setGame((g) =>
+        g
+          ? {
+              ...g,
+              current_actor: data.current_actor,
+              moves: data.moves,
+              status: data.game_status,
+              strikes: data.strikes,
+            }
+          : g
+      );
+      setTimeout(() => movieRef.current?.focus(), 50);
     } finally {
       setLoading(false);
     }
@@ -180,6 +251,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   }
 
   const won = game.status === "won";
+  const lost = game.status === "lost";
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -225,6 +297,25 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         )}
       </AnimatePresence>
 
+      {/* Strike flash overlay */}
+      <AnimatePresence>
+        {showStrikeFlash && (
+          <motion.div
+            key="strike-flash"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          >
+            <span className="text-red-500 font-bold"
+              style={{ fontSize: "20vw", lineHeight: 1, textShadow: "0 0 60px rgba(239,68,68,0.6)" }}>
+              ✕
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Letterbox */}
       <div className="fixed top-0 left-0 right-0 h-12 bg-black z-20 flex items-center px-5">
         <button
@@ -233,6 +324,9 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         >
           ← Exit
         </button>
+        <div className="ml-4">
+          <StrikeCounter strikes={game.strikes} />
+        </div>
         <div className="ml-auto flex items-center gap-4 text-xs text-cinema-silver/40 uppercase tracking-widest">
           <span>{game.difficulty}</span>
           <span>{game.moves.length} move{game.moves.length !== 1 ? "s" : ""}</span>
@@ -296,13 +390,19 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
               className="mb-6 space-y-2"
             >
               {game.moves.map((m, i) => (
-                <MoveCard key={i} move={m} index={i} />
+                <MoveCard
+                  key={i}
+                  move={m}
+                  index={i}
+                  isLast={i === game.moves.length - 1 && game.status === "in_progress"}
+                  onUndo={undoMove}
+                />
               ))}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Win state */}
+        {/* Won state */}
         {won ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -331,6 +431,36 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
               className="px-8 py-3 border border-cinema-gold text-cinema-gold text-xs uppercase tracking-widest hover:bg-cinema-gold hover:text-black transition-all"
             >
               New Film
+            </motion.button>
+          </motion.div>
+        ) : lost ? (
+          /* Game Over state */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="text-center py-8"
+          >
+            <motion.p
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-red-500 text-3xl font-bold tracking-tight mb-2"
+            >
+              ✕ Game Over ✕
+            </motion.p>
+            <p className="text-cinema-silver/60 text-sm mb-1">
+              3 strikes &nbsp;·&nbsp; {game.difficulty}
+            </p>
+            <p className="text-white/40 text-xs mb-8">
+              {game.start_actor.name} → {game.end_actor.name}
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => router.push("/")}
+              className="px-8 py-3 border border-red-500 text-red-500 text-xs uppercase tracking-widest hover:bg-red-500 hover:text-black transition-all"
+            >
+              Try Again
             </motion.button>
           </motion.div>
         ) : (
