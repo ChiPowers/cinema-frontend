@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 const DIFFICULTY_DESCRIPTIONS = {
-  easy: "2 hops",
-  medium: "3–5 hops",
-  hard: "6+ hops",
+  easy: "2 links",
+  medium: "3–5 links",
+  hard: "6+ links",
 };
 
 export default function Home() {
