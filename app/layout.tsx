@@ -12,6 +12,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="bg-cinema-black">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+      </head>
       <body className={`${mono.variable} font-mono text-white antialiased`}>
         {children}
       </body>

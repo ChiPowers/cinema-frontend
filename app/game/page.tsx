@@ -1,16 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { CinematicInput }   from "@/components/CinematicInput";
-import { CorrectFlash }     from "@/components/CorrectFlash";
-import { WrongFlash }       from "@/components/WrongFlash";
-import { WinScreen }        from "@/components/WinScreen";
-import { LinkProgress }     from "@/components/LinkProgress";
-import { PosterBackground } from "@/components/PosterBackground";
-import { ActorPosterThumb } from "@/components/ActorPosterThumb";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -38,13 +31,13 @@ interface GameState {
   min_moves: number;
   current_actor: Actor;
   moves: Move[];
-  status: "in_progress" | "won" | "lost";
-  strikes: number;
+  status: "in_progress" | "won";
 }
 
 function FilmFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
+      {/* Sprocket holes */}
       <div className="absolute -left-5 top-0 bottom-0 flex flex-col justify-around py-1 gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="w-3 h-3 rounded-sm bg-black border border-white/10" />
@@ -60,17 +53,7 @@ function FilmFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-function MoveCard({
-  move,
-  index,
-  isLast,
-  onUndo,
-}: {
-  move: Move;
-  index: number;
-  isLast: boolean;
-  onUndo?: () => void;
-}) {
+function MoveCard({ move, index }: { move: Move; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -91,7 +74,7 @@ function MoveCard({
           <span className="text-white/20 text-xs">?</span>
         </div>
       )}
-      <div className="min-w-0 text-xs leading-relaxed flex-1">
+      <div className="min-w-0 text-xs leading-relaxed">
         <span className="text-white/50">{move.from_actor}</span>
         <span className="text-cinema-gold mx-1.5">→</span>
         <span className="text-white font-medium italic">
@@ -103,61 +86,31 @@ function MoveCard({
         <span className="text-cinema-gold mx-1.5">→</span>
         <span className="text-white/50">{move.to_actor}</span>
       </div>
-      {isLast && onUndo && (
-        <button
-          onClick={onUndo}
-          className="flex-shrink-0 text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
-          title="Undo last move"
-        >
-          ↩
-        </button>
-      )}
     </motion.div>
   );
 }
 
-function StrikeCounter({ strikes }: { strikes: number }) {
-  return (
-    <div className="flex items-center gap-1">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <span
-          key={i}
-          className={`text-base leading-none ${
-            i < strikes ? "text-red-500" : "text-white/20"
-          }`}
-        >
-          {i < strikes ? "●" : "○"}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-export default function GamePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+function GameContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") ?? "";
   const [game, setGame] = useState<GameState | null>(null);
   const [movie, setMovie] = useState("");
   const [nextActor, setNextActor] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backdrop, setBackdrop] = useState<string | null>(null);
-  const [correctTrigger, setCorrectTrigger] = useState<
-    { title: string; year?: string | null; _key: number } | null
-  >(null);
-  const [wrongTrigger, setWrongTrigger] = useState<
-    { strikes: number; _key: number } | null
-  >(null);
-  const [forgeKey, setForgeKey] = useState(0);
+  const [flashTitle, setFlashTitle] = useState<string | null>(null);
   const movieRef = useRef<HTMLInputElement>(null);
-  const mainRef = useRef<HTMLElement>(null);
   const router = useRouter();
 
   useEffect(() => {
+    if (!id) return;
     fetch(`${API}/game/${id}`)
       .then((r) => r.json())
       .then(setGame);
   }, [id]);
 
+  // Focus movie input when game loads
   useEffect(() => {
     if (game?.status === "in_progress") movieRef.current?.focus();
   }, [game?.id, game?.status]);
@@ -177,17 +130,13 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
       const data = await res.json();
 
       if (!data.valid) {
-        setWrongTrigger({ strikes: data.strikes, _key: Date.now() });
-        setTimeout(() => {
-          setError(data.explanation);
-          setGame((g) =>
-            g ? { ...g, strikes: data.strikes, status: data.game_status } : g
-          );
-        }, 1700);
+        setError(data.explanation);
       } else {
-        if (data.backdrop_url) setBackdrop(data.backdrop_url);
-        setCorrectTrigger({ title: data.movie_title ?? movie, year: data.movie_year ?? null, _key: Date.now() });
-        setForgeKey((k) => k + 1);
+        // Reveal backdrop
+        if (data.backdrop_url) {
+          setBackdrop(data.backdrop_url);
+          setFlashTitle(data.movie_title ?? movie);
+        }
 
         const move: Move = {
           from_actor: game.current_actor.name,
@@ -206,7 +155,6 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                 current_actor: data.current_actor,
                 moves: [...g.moves, move],
                 status: data.game_status,
-                strikes: data.strikes,
               }
             : g
         );
@@ -214,30 +162,6 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         setNextActor("");
         setTimeout(() => movieRef.current?.focus(), 50);
       }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function undoMove() {
-    if (!game || loading) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API}/game/${id}/move`, { method: "DELETE" });
-      const data = await res.json();
-      setGame((g) =>
-        g
-          ? {
-              ...g,
-              current_actor: data.current_actor,
-              moves: data.moves,
-              status: data.game_status,
-              strikes: data.strikes,
-            }
-          : g
-      );
-      setTimeout(() => movieRef.current?.focus(), 50);
     } finally {
       setLoading(false);
     }
@@ -258,21 +182,9 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   }
 
   const won = game.status === "won";
-  const lost = game.status === "lost";
 
   return (
-    <main ref={mainRef} className="min-h-screen flex flex-col">
-      {/* Overlays */}
-      <CorrectFlash trigger={correctTrigger} />
-      <WrongFlash trigger={wrongTrigger} shakeTargetRef={mainRef} />
-      <PosterBackground
-        entries={game.moves.map((m) => ({
-          movie: m.movie_title ?? m.movie,
-          year: m.movie_year,
-          posterUrl: m.poster_url,
-        }))}
-      />
-
+    <main className="min-h-screen flex flex-col">
       {/* Backdrop */}
       <AnimatePresence mode="wait">
         {backdrop && (
@@ -296,6 +208,25 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         )}
       </AnimatePresence>
 
+      {/* Movie title flash on correct move */}
+      <AnimatePresence>
+        {flashTitle && (
+          <motion.div
+            key={flashTitle}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            onAnimationComplete={() => setTimeout(() => setFlashTitle(null), 2000)}
+            className="fixed top-16 left-0 right-0 z-30 flex justify-center"
+          >
+            <span className="bg-cinema-gold text-black text-xs font-bold px-4 py-1.5 tracking-widest uppercase">
+              ✓ {flashTitle}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Letterbox */}
       <div className="fixed top-0 left-0 right-0 h-12 bg-black z-20 flex items-center px-5">
         <button
@@ -304,9 +235,6 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         >
           ← Exit
         </button>
-        <div className="ml-4">
-          <StrikeCounter strikes={game.strikes} />
-        </div>
         <div className="ml-auto flex items-center gap-4 text-xs text-cinema-silver/40 uppercase tracking-widest">
           <span>{game.difficulty}</span>
           <span>{game.moves.length} move{game.moves.length !== 1 ? "s" : ""}</span>
@@ -337,11 +265,19 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                   </p>
                   <p className="text-white/30 text-xs mt-0.5">Start</p>
                 </div>
-                <LinkProgress
-                  total={game.min_moves}
-                  completed={game.moves.length}
-                  forgeTrigger={forgeKey}
-                />
+                <div className="flex flex-col items-center gap-1">
+                  {Array.from({ length: game.min_moves }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-5 h-px ${
+                        i < game.moves.length ? "bg-cinema-gold" : "bg-white/20"
+                      }`}
+                    />
+                  ))}
+                  <p className="text-white/20 text-xs mt-1">
+                    {game.min_moves} link{game.min_moves !== 1 ? "s" : ""}
+                  </p>
+                </div>
                 <div className="text-center flex-1">
                   <p className="text-white font-bold text-base leading-tight">
                     {game.end_actor.name}
@@ -362,28 +298,14 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
               className="mb-6 space-y-2"
             >
               {game.moves.map((m, i) => (
-                <MoveCard
-                  key={i}
-                  move={m}
-                  index={i}
-                  isLast={i === game.moves.length - 1 && game.status === "in_progress"}
-                  onUndo={undoMove}
-                />
+                <MoveCard key={i} move={m} index={i} />
               ))}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Won state */}
+        {/* Win state */}
         {won ? (
-          <WinScreen
-            moves={game.moves}
-            startActor={game.start_actor.name}
-            endActor={game.end_actor.name}
-            difficulty={game.difficulty}
-            onPlayAgain={() => router.push("/")}
-          />
-        ) : lost ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -393,12 +315,13 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
             <motion.p
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="text-red-500 text-3xl font-bold tracking-tight mb-2"
+              className="text-cinema-gold text-3xl font-bold tracking-tight mb-2"
             >
-              ✕ Game Over ✕
+              ★ Scene Complete ★
             </motion.p>
             <p className="text-cinema-silver/60 text-sm mb-1">
-              3 strikes &nbsp;·&nbsp; {game.difficulty}
+              {game.moves.length} move{game.moves.length !== 1 ? "s" : ""} &nbsp;·&nbsp;{" "}
+              {game.difficulty}
             </p>
             <p className="text-white/40 text-xs mb-8">
               {game.start_actor.name} → {game.end_actor.name}
@@ -407,64 +330,56 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => router.push("/")}
-              className="px-8 py-3 border border-red-500 text-red-500 text-xs uppercase tracking-widest hover:bg-red-500 hover:text-black transition-all"
+              className="px-8 py-3 border border-cinema-gold text-cinema-gold text-xs uppercase tracking-widest hover:bg-cinema-gold hover:text-black transition-all"
             >
-              Try Again
+              New Film
             </motion.button>
           </motion.div>
         ) : (
           <>
-            {/* Current actor with poster thumb */}
-            {(() => {
-              const lastMove = game.moves[game.moves.length - 1];
-              return (
-                <motion.div
-                  key={game.current_actor.name}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="mb-5 flex items-center gap-3"
-                >
-                  {lastMove && (
-                    <ActorPosterThumb
-                      key={game.moves.length}
-                      movieTitle={lastMove.movie_title ?? lastMove.movie}
-                      posterUrl={lastMove.poster_url}
-                    />
-                  )}
-                  <div>
-                    <p className="text-white/25 text-[9px] tracking-widest uppercase mb-0.5">
-                      Current link
-                    </p>
-                    <p className="text-cinema-gold text-xl font-bold">
-                      {game.current_actor.name}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })()}
+            {/* Current actor indicator */}
+            <motion.div
+              key={game.current_actor.name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="mb-5"
+            >
+              <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Now with</p>
+              <p className="text-cinema-gold text-xl font-bold">{game.current_actor.name}</p>
+            </motion.div>
 
             {/* Move form */}
             <form onSubmit={submitMove} className="space-y-3">
-              <CinematicInput
-                label={`A movie featuring ${game.current_actor.name.split(" ")[0]}`}
-                takeLabel="TAKE 1"
-                value={movie}
-                onChange={setMovie}
-                placeholder="e.g. The Dark Knight"
-                disabled={loading}
-                required
-                inputRef={movieRef}
-              />
+              <div>
+                <label className="block text-xs text-white/30 tracking-widest uppercase mb-1.5">
+                  A movie featuring {game.current_actor.name.split(" ")[0]}
+                </label>
+                <input
+                  ref={movieRef}
+                  type="text"
+                  value={movie}
+                  onChange={(e) => setMovie(e.target.value)}
+                  placeholder="e.g. The Dark Knight"
+                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cinema-gold/60 transition-colors"
+                  required
+                  disabled={loading}
+                />
+              </div>
 
-              <CinematicInput
-                label="A co-star in that movie"
-                takeLabel="TAKE 2"
-                value={nextActor}
-                onChange={setNextActor}
-                placeholder="e.g. Heath Ledger"
-                disabled={loading}
-                required
-              />
+              <div>
+                <label className="block text-xs text-white/30 tracking-widest uppercase mb-1.5">
+                  A co-star in that movie
+                </label>
+                <input
+                  type="text"
+                  value={nextActor}
+                  onChange={(e) => setNextActor(e.target.value)}
+                  placeholder="e.g. Heath Ledger"
+                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cinema-gold/60 transition-colors"
+                  required
+                  disabled={loading}
+                />
+              </div>
 
               <AnimatePresence>
                 {error && (
@@ -502,5 +417,13 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         )}
       </div>
     </main>
+  );
+}
+
+export default function GamePage() {
+  return (
+    <Suspense>
+      <GameContent />
+    </Suspense>
   );
 }

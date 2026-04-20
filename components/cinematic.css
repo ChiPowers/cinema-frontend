@@ -1,0 +1,248 @@
+/* ─── Cinematic Input: viewfinder corners ───────────────────────── */
+
+.cinematic-wrap {
+  position: relative;
+}
+
+.cinematic-wrap::before,
+.cinematic-wrap::after,
+.cinematic-corners::before,
+.cinematic-corners::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(245, 197, 24, 0.2);
+  border-style: solid;
+  transition: border-color 0.25s ease, width 0.25s ease, height 0.25s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cinematic-wrap::before  { top: -2px;    left: -2px;  border-width: 2px 0 0 2px; }
+.cinematic-wrap::after   { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+.cinematic-corners::before { top: -2px;    right: -2px; border-width: 2px 2px 0 0; }
+.cinematic-corners::after  { bottom: -2px; left: -2px;  border-width: 0 0 2px 2px; }
+
+.cinematic-wrap:focus-within::before,
+.cinematic-wrap:focus-within::after,
+.cinematic-wrap:focus-within .cinematic-corners::before,
+.cinematic-wrap:focus-within .cinematic-corners::after {
+  width: 20px;
+  height: 20px;
+  border-color: #f5c518;
+}
+
+.cinematic-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245, 197, 24, 0.55), transparent);
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.cinematic-wrap:focus-within .cinematic-scan {
+  opacity: 1;
+  animation: cinematicScan 1.8s ease-in-out infinite;
+}
+
+@keyframes cinematicScan {
+  0%   { top: 0%;   opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ─── CorrectFlash ──────────────────────────────────────────────── */
+
+@keyframes projectorCut {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes titleSlam {
+  from { transform: scale(1.45); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes titleExit {
+  to { opacity: 0; transform: scale(1.05); }
+}
+
+@keyframes spotlightFade {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ─── WrongFlash ────────────────────────────────────────────────── */
+
+@keyframes vignetteFlash {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes xSlam {
+  from { transform: scale(2.2); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes xExit {
+  to { opacity: 0; transform: scale(1.08); }
+}
+
+@keyframes bodyShake {
+  0%,100% { transform: translateX(0) rotate(0deg); }
+  10%  { transform: translateX(-7px) rotate(-0.4deg); }
+  20%  { transform: translateX(7px)  rotate(0.4deg); }
+  30%  { transform: translateX(-5px); }
+  40%  { transform: translateX(5px); }
+  55%  { transform: translateX(-3px); }
+  70%  { transform: translateX(3px); }
+  85%  { transform: translateX(-1px); }
+}
+
+.cinema-shake {
+  animation: bodyShake 0.45s ease both;
+}
+
+/* ─── LinkProgress: forge animation ────────────────────────────── */
+
+@keyframes forgeGlow {
+  0%   { filter: drop-shadow(0 0 3px rgba(245, 197, 24, 0.3)); }
+  45%  { filter: drop-shadow(0 0 14px rgba(245, 197, 24, 1)); }
+  100% { filter: drop-shadow(0 0 5px rgba(245, 197, 24, 0.55)); }
+}
+
+.link-ring-done {
+  filter: drop-shadow(0 0 4px rgba(245, 197, 24, 0.55));
+}
+
+.link-ring-forging {
+  animation: forgeGlow 1.1s 0.35s ease forwards;
+}
+
+/* ─── PosterBackground ──────────────────────────────────────────── */
+
+.cinema-bg-poster {
+  position: absolute;
+  width: 140px;
+  height: 210px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  animation: posterDrift 0.9s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+}
+
+@keyframes posterDrift {
+  from {
+    opacity: 0;
+    transform: translateY(28px) var(--poster-rot, rotate(0deg));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) var(--poster-rot, rotate(0deg));
+  }
+}
+
+.cinema-bg-poster-fill {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+}
+
+.cinema-bg-poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 30%, transparent 80%);
+}
+
+.cinema-bg-poster-title {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0 8px;
+  line-height: 1.2;
+}
+
+.cinema-bg-poster-year {
+  display: block;
+  font-size: 10px;
+  opacity: 0.5;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+/* ─── ActorPosterThumb ──────────────────────────────────────────── */
+
+.cinema-actor-thumb {
+  position: relative;
+  width: 44px;
+  height: 66px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  animation: thumbIn 0.35s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+}
+
+@keyframes thumbIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.cinema-actor-thumb-fill {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 3px,
+    transparent 3px,
+    transparent 8px
+  );
+}
+
+.cinema-actor-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.cinema-actor-thumb-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+  padding: 4px 2px 3px;
+  line-height: 1.1;
+}
+
+/* ─── WinScreen: poster chain ───────────────────────────────────── */
+
+@keyframes chainNodeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
