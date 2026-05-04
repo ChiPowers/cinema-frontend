@@ -42,23 +42,173 @@ interface GameState {
   strikes: number;
 }
 
-function FilmFrame({ children }: { children: React.ReactNode }) {
+/* ─── Film reel SVG ─────────────────────────────────────────────── */
+
+function FilmReel({ reverse, goldHub }: { reverse?: boolean; goldHub?: boolean }) {
+  const angles = [0, 72, 144, 216, 288];
   return (
-    <div className="relative">
-      <div className="absolute -left-5 top-0 bottom-0 flex flex-col justify-around py-1 gap-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-3 h-3 rounded-sm bg-black border border-white/10" />
+    <svg width="90" height="90" viewBox="0 0 140 140" fill="none" aria-hidden="true">
+      <circle cx="70" cy="70" r="66" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" fill="#111" />
+      <circle cx="70" cy="70" r="62" stroke="rgba(255,255,255,0.07)" strokeWidth="4" strokeDasharray="4 9" fill="none" />
+      <g className={reverse ? "reel-rotating-rev" : "reel-rotating"}>
+        {angles.map((deg) => (
+          <React.Fragment key={deg}>
+            <line
+              x1="70" y1="70" x2="70" y2="18"
+              stroke="rgba(255,255,255,0.22)" strokeWidth="7" strokeLinecap="round"
+              transform={deg ? `rotate(${deg} 70 70)` : undefined}
+            />
+            <circle
+              cx="70" cy="24" r="7"
+              fill="#0a0a0a" stroke="rgba(255,255,255,0.22)" strokeWidth="1.5"
+              transform={deg ? `rotate(${deg} 70 70)` : undefined}
+            />
+          </React.Fragment>
         ))}
-      </div>
-      <div className="absolute -right-5 top-0 bottom-0 flex flex-col justify-around py-1 gap-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-3 h-3 rounded-sm bg-black border border-white/10" />
-        ))}
-      </div>
-      {children}
+      </g>
+      <circle
+        cx="70" cy="70" r="24"
+        fill="#1a1a1a"
+        stroke={goldHub ? "rgba(245,197,24,0.4)" : "rgba(255,255,255,0.2)"}
+        strokeWidth="2"
+      />
+      <circle cx="70" cy="70" r="5" fill="#0a0a0a" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+/* ─── Sprocket holes row ────────────────────────────────────────── */
+
+function SprocketRow({ reverse }: { reverse?: boolean }) {
+  return (
+    <div className={`tape-scroll${reverse ? " tape-scroll-rev" : ""}`}>
+      {Array.from({ length: 80 }).map((_, i) => (
+        <div
+          key={i}
+          style={{
+            width: 8, height: 8, borderRadius: 2,
+            background: "#000",
+            border: "1px solid rgba(255,255,255,0.22)",
+            flexShrink: 0,
+          }}
+        />
+      ))}
     </div>
   );
 }
+
+/* ─── Reel objective card ───────────────────────────────────────── */
+
+function ReelObjective({
+  startActor,
+  endActor,
+  total,
+  completed,
+  forgeTrigger,
+}: {
+  startActor: string;
+  endActor: string;
+  total: number;
+  completed: number;
+  forgeTrigger: number;
+}) {
+  return (
+    <div style={{ marginBottom: 32 }}>
+      {/* Actor name row */}
+      <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, alignItems: "flex-end" }}>
+        <div style={{ width: 90, textAlign: "center" }}>
+          <div style={{ fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+            from
+          </div>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, lineHeight: 1.2, color: "#f5c518" }}>
+            {startActor}
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div style={{ width: 90, textAlign: "center" }}>
+          <div style={{ fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+            to
+          </div>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, lineHeight: 1.2, color: "#fff" }}>
+            {endActor}
+          </div>
+        </div>
+      </div>
+
+      {/* Reels + tape row */}
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        {/* Left reel */}
+        <div style={{ flexShrink: 0 }}>
+          <FilmReel goldHub />
+        </div>
+
+        {/* Filmstrip tape */}
+        <div style={{ flex: 1, height: 90, position: "relative", overflow: "visible", zIndex: 1 }}>
+          {/* Tape strip */}
+          <div style={{
+            position: "absolute", top: "50%", left: 0, right: 0,
+            transform: "translateY(-50%)",
+            height: 28,
+            background: "#1a1a1a",
+            borderTop: "1px solid rgba(255,255,255,0.14)",
+            borderBottom: "1px solid rgba(255,255,255,0.14)",
+            overflow: "hidden",
+          }}>
+            {/* Top sprocket holes */}
+            <div style={{ position: "absolute", top: 3, left: 0, right: 0, height: 8, overflow: "hidden", display: "flex" }}>
+              <SprocketRow />
+            </div>
+            {/* Bottom sprocket holes */}
+            <div style={{ position: "absolute", bottom: 3, left: 0, right: 0, height: 8, overflow: "hidden", display: "flex" }}>
+              <SprocketRow reverse />
+            </div>
+          </div>
+
+          {/* Progress dots centered on tape */}
+          <div style={{
+            position: "absolute", top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 10,
+            background: "rgba(10,10,10,0.9)",
+            padding: "4px 6px",
+          }}>
+            <LinkProgress total={total} completed={completed} forgeTrigger={forgeTrigger} />
+          </div>
+        </div>
+
+        {/* Right reel */}
+        <div style={{ flexShrink: 0 }}>
+          <FilmReel reverse />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Strike counter (X marks) ──────────────────────────────────── */
+
+function StrikeCounter({ strikes }: { strikes: number }) {
+  return (
+    <div className="flex items-center gap-1.5" role="img" aria-label={`${strikes} of 3 strikes`}>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <svg key={i} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <line
+            x1="2" y1="2" x2="14" y2="14"
+            stroke={i < strikes ? "#e63946" : "rgba(255,255,255,0.2)"}
+            strokeWidth="2.5" strokeLinecap="round"
+          />
+          <line
+            x1="14" y1="2" x2="2" y2="14"
+            stroke={i < strikes ? "#e63946" : "rgba(255,255,255,0.2)"}
+            strokeWidth="2.5" strokeLinecap="round"
+          />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Move card (vertical layout) ───────────────────────────────── */
 
 function MoveCard({
   move,
@@ -73,40 +223,56 @@ function MoveCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 bg-cinema-card border border-white/5 p-3 rounded-sm"
+      className="flex items-stretch gap-3 bg-cinema-card border border-white/5 p-3"
     >
+      {/* Poster thumbnail */}
       {move.poster_url ? (
         <Image
           src={move.poster_url}
           alt={move.movie_title ?? ""}
           width={36}
           height={54}
-          className="object-cover rounded-sm flex-shrink-0"
+          className="object-cover flex-shrink-0 self-center"
         />
       ) : (
-        <div className="w-9 h-14 bg-white/5 rounded-sm flex-shrink-0 flex items-center justify-center">
+        <div className="w-9 h-14 bg-white/5 flex-shrink-0 self-center flex items-center justify-center">
           <span className="text-white/20 text-xs">?</span>
         </div>
       )}
-      <div className="min-w-0 text-xs leading-relaxed flex-1">
-        <span className="text-white/50">{move.from_actor}</span>
-        <span className="text-cinema-gold mx-1.5">→</span>
-        <span className="text-white font-medium italic">
-          {move.movie_title ?? move.movie}
-        </span>
-        {move.movie_year && (
-          <span className="text-white/30 ml-1">({move.movie_year})</span>
-        )}
-        <span className="text-cinema-gold mx-1.5">→</span>
-        <span className="text-white/50">{move.to_actor}</span>
+
+      {/* Body: from → movie → to */}
+      <div className="flex flex-col justify-center min-w-0 flex-1" style={{ gap: 0 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.04em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", lineHeight: 1 }}>
+          {move.from_actor}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", padding: "3px 0" }}>
+          <div style={{ width: 1, height: 10, background: "rgba(245,197,24,0.25)", flexShrink: 0 }} />
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6, minWidth: 0 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", fontStyle: "italic", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {move.movie_title ?? move.movie}
+          </span>
+          {move.movie_year && (
+            <span style={{ fontSize: 9, color: "rgba(245,197,24,0.5)", letterSpacing: "0.05em", flexShrink: 0 }}>
+              {move.movie_year}
+            </span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", padding: "3px 0" }}>
+          <div style={{ width: 1, height: 10, background: "rgba(245,197,24,0.25)", flexShrink: 0 }} />
+        </div>
+        <div style={{ fontSize: 10, letterSpacing: "0.04em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", lineHeight: 1 }}>
+          {move.to_actor}
+        </div>
       </div>
+
       {isLast && onUndo && (
         <button
           onClick={onUndo}
-          className="flex-shrink-0 text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
+          className="flex-shrink-0 self-start text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
           title="Undo last move"
         >
           ↩
@@ -116,22 +282,26 @@ function MoveCard({
   );
 }
 
-function StrikeCounter({ strikes }: { strikes: number }) {
+/* ─── Streak banner ─────────────────────────────────────────────── */
+
+const STREAK_LABELS = ["", "", "2 in a row! 🎬", "3-link combo! 🎞️", "On a roll! 🔥", "Unstoppable! ⭐"];
+
+function StreakBanner({ streak }: { streak: number }) {
+  if (streak < 2) return null;
+  const label = STREAK_LABELS[Math.min(streak, STREAK_LABELS.length - 1)] ?? `${streak} straight! 🎬`;
   return (
-    <div className="flex items-center gap-1">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <span
-          key={i}
-          className={`text-base leading-none ${
-            i < strikes ? "text-red-500" : "text-white/20"
-          }`}
-        >
-          {i < strikes ? "●" : "○"}
-        </span>
-      ))}
+    <div className="fixed top-14 left-0 right-0 z-30 flex justify-center pointer-events-none">
+      <div
+        className="streak-pill text-cinema-gold text-xs uppercase tracking-[0.2em] px-3 py-1"
+        style={{ background: "rgba(245,197,24,0.15)", border: "1px solid rgba(245,197,24,0.4)" }}
+      >
+        {label}
+      </div>
     </div>
   );
 }
+
+/* ─── Game page ─────────────────────────────────────────────────── */
 
 export default function GamePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -148,6 +318,12 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     { strikes: number; _key: number } | null
   >(null);
   const [forgeKey, setForgeKey] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [streakVisible, setStreakVisible] = useState(false);
+  const [hintText, setHintText] = useState<string | null>(null);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const movieRef = useRef<HTMLInputElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const router = useRouter();
@@ -161,6 +337,13 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     if (game?.status === "in_progress") movieRef.current?.focus();
   }, [game?.id, game?.status]);
+
+  function showStreak(count: number) {
+    if (count < 2) return;
+    setStreakVisible(true);
+    if (streakTimerRef.current) clearTimeout(streakTimerRef.current);
+    streakTimerRef.current = setTimeout(() => setStreakVisible(false), 2500);
+  }
 
   async function submitMove(e: React.FormEvent) {
     e.preventDefault();
@@ -177,6 +360,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
       const data = await res.json();
 
       if (!data.valid) {
+        setStreak(0);
         setWrongTrigger({ strikes: data.strikes, _key: Date.now() });
         setTimeout(() => {
           setError(data.explanation);
@@ -188,6 +372,12 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         if (data.backdrop_url) setBackdrop(data.backdrop_url);
         setCorrectTrigger({ title: data.movie_title ?? movie, year: data.movie_year ?? null, _key: Date.now() });
         setForgeKey((k) => k + 1);
+        setHintText(null);
+        setHintUsed(false);
+
+        const newStreak = streak + 1;
+        setStreak(newStreak);
+        showStreak(newStreak);
 
         const move: Move = {
           from_actor: game.current_actor.name,
@@ -243,6 +433,27 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     }
   }
 
+  async function getHint() {
+    if (!game || hintUsed || hintLoading || game.strikes >= 3) return;
+    setHintLoading(true);
+    try {
+      const res = await fetch(`${API}/game/${id}/hint`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setHintText(data.hint ?? data.explanation ?? "Try thinking about films from the late 90s or early 2000s.");
+      setHintUsed(true);
+      if (data.strikes !== undefined) {
+        setGame((g) => g ? { ...g, strikes: data.strikes } : g);
+        setWrongTrigger({ strikes: data.strikes, _key: Date.now() });
+      }
+    } catch {
+      setHintText("No hint available right now.");
+      setHintUsed(true);
+    } finally {
+      setHintLoading(false);
+    }
+  }
+
   if (!game) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -257,7 +468,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     );
   }
 
-  const won = game.status === "won";
+  const won  = game.status === "won";
   const lost = game.status === "lost";
 
   return (
@@ -273,6 +484,9 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         }))}
       />
 
+      {/* Streak banner */}
+      {streakVisible && <StreakBanner streak={streak} />}
+
       {/* Backdrop */}
       <AnimatePresence mode="wait">
         {backdrop && (
@@ -284,19 +498,13 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
             transition={{ duration: 1.4 }}
             className="fixed inset-0 z-0"
           >
-            <Image
-              src={backdrop}
-              alt=""
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={backdrop} alt="" fill className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Letterbox */}
+      {/* Letterbox top */}
       <div className="fixed top-0 left-0 right-0 h-12 bg-black z-20 flex items-center px-5">
         <button
           onClick={() => router.push("/")}
@@ -309,7 +517,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         </div>
         <div className="ml-auto flex items-center gap-4 text-xs text-cinema-silver/40 uppercase tracking-widest">
           <span>{game.difficulty}</span>
-          <span>{game.moves.length} move{game.moves.length !== 1 ? "s" : ""}</span>
+          <span>{game.moves.length} link{game.moves.length !== 1 ? "s" : ""}</span>
         </div>
       </div>
       <div className="fixed bottom-0 left-0 right-0 h-12 bg-black z-20" />
@@ -319,38 +527,15 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
 
       <div className="relative z-10 flex flex-col px-8 pt-20 pb-20 max-w-xl mx-auto w-full">
 
-        {/* Objective card */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <FilmFrame>
-            <div className="border border-white/10 bg-cinema-card/80 backdrop-blur-sm px-6 py-5 mx-6">
-              <p className="text-cinema-silver/40 text-xs tracking-[0.3em] uppercase text-center mb-4">
-                Connect
-              </p>
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-center flex-1">
-                  <p className="text-cinema-gold font-bold text-base leading-tight">
-                    {game.start_actor.name}
-                  </p>
-                  <p className="text-white/30 text-xs mt-0.5">Start</p>
-                </div>
-                <LinkProgress
-                  total={game.min_moves}
-                  completed={game.moves.length}
-                  forgeTrigger={forgeKey}
-                />
-                <div className="text-center flex-1">
-                  <p className="text-white font-bold text-base leading-tight">
-                    {game.end_actor.name}
-                  </p>
-                  <p className="text-white/30 text-xs mt-0.5">End</p>
-                </div>
-              </div>
-            </div>
-          </FilmFrame>
+        {/* Reel objective */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <ReelObjective
+            startActor={game.start_actor.name}
+            endActor={game.end_actor.name}
+            total={game.min_moves}
+            completed={game.moves.length}
+            forgeTrigger={forgeKey}
+          />
         </motion.div>
 
         {/* Move chain */}
@@ -374,7 +559,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
           )}
         </AnimatePresence>
 
-        {/* Won state */}
+        {/* Game states */}
         {won ? (
           <WinScreen
             moves={game.moves}
@@ -414,7 +599,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
           </motion.div>
         ) : (
           <>
-            {/* Current actor with poster thumb */}
+            {/* Current actor */}
             {(() => {
               const lastMove = game.moves[game.moves.length - 1];
               return (
@@ -432,8 +617,8 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                     />
                   )}
                   <div>
-                    <p className="text-white/25 text-[9px] tracking-widest uppercase mb-0.5">
-                      Current link
+                    <p className="text-white/55 text-[9px] tracking-widest uppercase mb-0.5">
+                      On screen now
                     </p>
                     <p className="text-cinema-gold text-xl font-bold">
                       {game.current_actor.name}
@@ -442,6 +627,48 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                 </motion.div>
               );
             })()}
+
+            {/* Hint row */}
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={getHint}
+                disabled={hintUsed || hintLoading || game.strikes >= 3}
+                className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.15em] px-2.5 py-1.5 transition-all disabled:opacity-30"
+                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.45)" }}
+                onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#f5c518"; e.currentTarget.style.color = "#f5c518"; } }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
+              >
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                  <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.3" />
+                  <path d="M5.5 3v2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  <circle cx="5.5" cy="8" r=".6" fill="currentColor" />
+                </svg>
+                {hintUsed ? "Hint used" : hintLoading ? "…" : "Hint"}
+                {!hintUsed && (
+                  <span style={{ display: "inline-block", background: "rgba(245,197,24,0.12)", color: "rgba(245,197,24,0.8)", fontSize: 9, letterSpacing: "0.1em", padding: "2px 6px", border: "1px solid rgba(245,197,24,0.3)" }}>
+                    -1 strike
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Hint reveal */}
+            <AnimatePresence>
+              {hintText && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden mb-2"
+                >
+                  <p
+                    className="text-xs leading-relaxed px-3 py-2"
+                    style={{ color: "rgba(245,197,24,0.85)", border: "1px solid rgba(245,197,24,0.2)", background: "rgba(245,197,24,0.05)" }}
+                    dangerouslySetInnerHTML={{ __html: hintText }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Move form */}
             <form onSubmit={submitMove} className="space-y-3">
@@ -474,7 +701,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-red-400/80 text-xs leading-relaxed py-1 border-l-2 border-red-500/40 pl-3">
+                    <p className="text-[#ff6b6b] text-xs leading-relaxed py-1 border-l-2 border-[#ff6b6b] pl-3">
                       {error}
                     </p>
                   </motion.div>
