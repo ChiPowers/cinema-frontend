@@ -20,6 +20,8 @@ interface CorrectFlashProps {
 export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
   const [phase, setPhase] = useState<"idle" | "flash" | "title" | "exit">("idle");
   const [current, setCurrent] = useState<{ title: string; year?: string | null } | null>(null);
+  const [srMsg, setSrMsg] = useState("");
+  const srToggle = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Clear all pending timers on unmount
@@ -35,6 +37,12 @@ export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
     setCurrent(trigger);
     setPhase("flash");
 
+    // Announce after flash peak so the sequence doesn't interrupt itself
+    const year = trigger.year ? ` (${trigger.year})` : "";
+    const msg = `Correct! Linked through ${trigger.title}${year}.`;
+    srToggle.current = !srToggle.current;
+    setTimeout(() => setSrMsg(msg + (srToggle.current ? "​" : "‌")), 150);
+
     const t1 = setTimeout(() => setPhase("title"), 100);
     const t2 = setTimeout(() => setPhase("exit"), 2300);
     const t3 = setTimeout(() => {
@@ -47,6 +55,15 @@ export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
 
   return (
     <>
+      {/* Screen-reader live region */}
+      <p
+        aria-live="assertive"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {srMsg}
+      </p>
+
       {/* 1. Projector-cut white flash */}
       <AnimatePresence>
         {phase === "flash" && (

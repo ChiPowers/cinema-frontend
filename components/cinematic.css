@@ -246,3 +246,59 @@
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
+
+/* ─── Film reel spin ────────────────────────────────────────────── */
+
+@keyframes reelSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes reelSpinRev {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+.reel-rotating {
+  animation: reelSpin 8s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.reel-rotating-rev {
+  animation: reelSpinRev 8s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* ─── Filmstrip tape scroll ─────────────────────────────────────── */
+
+@keyframes tapeScrollH {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.tape-scroll {
+  display: flex;
+  gap: 10px;
+  padding: 0 4px;
+  animation: tapeScrollH 8s linear infinite;
+  width: max-content;
+  align-items: center;
+  height: 100%;
+}
+
+.tape-scroll-rev {
+  animation-direction: reverse;
+}
+
+/* ─── Streak banner ─────────────────────────────────────────────── */
+
+@keyframes streakPop {
+  from { opacity: 0; transform: scale(0.7) translateY(-6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.streak-pill {
+  animation: streakPop 0.4s cubic-bezier(0.15, 1.4, 0.4, 1) both;
+}

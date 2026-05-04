@@ -28,6 +28,8 @@ interface WrongFlashProps {
 export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps) {
   const [phase, setPhase] = useState<"idle" | "active" | "exit">("idle");
   const [strikes, setStrikes] = useState(0);
+  const [srMsg, setSrMsg] = useState("");
+  const srToggle = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => () => timerRef.current.forEach(clearTimeout), []);
@@ -39,6 +41,14 @@ export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps)
     timerRef.current = [];
 
     setStrikes(trigger.strikes);
+
+    // Announce immediately so it lands before the visual sequence ends
+    const msg =
+      trigger.strikes >= 3
+        ? "Wrong answer. Game over — 3 strikes used."
+        : `Wrong answer. Strike ${trigger.strikes} of 3.`;
+    srToggle.current = !srToggle.current;
+    setTimeout(() => setSrMsg(msg + (srToggle.current ? "​" : "‌")), 50);
 
     // Shake the target element
     const target = shakeTargetRef?.current;
@@ -63,6 +73,16 @@ export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps)
     strikes >= 3 ? "Game Over" : `Strike ${strikes} of 3`;
 
   return (
+    <>
+      {/* Screen-reader live region */}
+      <p
+        aria-live="assertive"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {srMsg}
+      </p>
+
     <AnimatePresence>
       {phase !== "idle" && (
         <motion.div
@@ -118,5 +138,6 @@ export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps)
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 }
