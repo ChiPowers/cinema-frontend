@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -21,25 +21,29 @@ interface WinScreenProps {
   onPlayAgain: () => void;
 }
 
-/** One actor node in the chain */
+const WIN_QUIPS = [
+  "Chain Linked",
+  "Six Degrees Mastered",
+  "Roll Credits",
+  "Print the Cut",
+  "That's a Wrap",
+  "Hollywood Bows",
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/** Actor node: a dot inside a bordered circle. Endpoints are gold-filled with a glow. */
 function ActorNode({
   name,
-  profileUrl,
   highlight,
   delay,
 }: {
   name: string;
-  profileUrl?: string | null;
   highlight?: boolean;
   delay: number;
 }) {
-  const initials = name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -48,30 +52,37 @@ function ActorNode({
       className="flex flex-col items-center gap-1.5 flex-shrink-0"
     >
       <div
-        className={`w-11 h-11 rounded-full flex items-center justify-center overflow-hidden
-          bg-cinema-card border-[1.5px] flex-shrink-0
-          ${highlight ? "border-cinema-gold/60" : "border-white/15"}`}
+        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 border-[1.5px]"
+        style={{
+          background: highlight ? "rgba(245,197,24,0.12)" : "rgba(20,20,20,0.6)",
+          borderColor: highlight ? "rgba(245,197,24,0.7)" : "rgba(255,255,255,0.15)",
+        }}
       >
-        {profileUrl ? (
-          <Image
-            src={profileUrl}
-            alt={name}
-            width={44}
-            height={44}
-            className="object-cover w-full h-full"
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          {highlight && (
+            <defs>
+              <filter id={`dotglow-${name.replace(/\W/g, "")}`}>
+                <feDropShadow
+                  dx="0"
+                  dy="0"
+                  stdDeviation="2.5"
+                  floodColor="rgba(245,197,24,0.9)"
+                />
+              </filter>
+            </defs>
+          )}
+          <circle
+            cx="9"
+            cy="9"
+            r={highlight ? 7 : 5}
+            fill={highlight ? "#f5c518" : "rgba(255,255,255,0.25)"}
+            filter={highlight ? `url(#dotglow-${name.replace(/\W/g, "")})` : undefined}
           />
-        ) : (
-          <span
-            className={`text-sm font-bold ${highlight ? "text-cinema-gold" : "text-white/50"}`}
-          >
-            {initials}
-          </span>
-        )}
+        </svg>
       </div>
       <span
-        className={`text-center leading-tight max-w-[72px]
-          ${highlight ? "text-cinema-gold" : "text-white/45"}
-          uppercase tracking-[0.05em]`}
+        className={`text-center leading-tight max-w-[72px] uppercase tracking-[0.05em]
+          ${highlight ? "text-cinema-gold" : "text-white/45"}`}
         style={{ fontSize: 8 }}
       >
         {name}
@@ -80,19 +91,50 @@ function ActorNode({
   );
 }
 
-/** Connector line (thin gold dash) */
+/** Connector: horizontal line with a gold dot at each end (matches v2 winLinkSVG). */
 function ConnectorLine({ delay }: { delay: number }) {
+  const w = 32;
+  const h = 16;
+  const cy = 8;
+  const r = 4;
   return (
     <motion.div
       initial={{ opacity: 0, scaleX: 0 }}
       animate={{ opacity: 1, scaleX: 1 }}
-      transition={{ delay, duration: 0.2, ease: "easeOut" }}
-      className="w-3 h-px bg-cinema-gold/30 flex-shrink-0 origin-left"
-    />
+      transition={{ delay, duration: 0.25, ease: "easeOut" }}
+      className="flex-shrink-0 origin-left"
+    >
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
+        <line
+          x1={r}
+          y1={cy}
+          x2={w - r}
+          y2={cy}
+          stroke="rgba(245,197,24,0.45)"
+          strokeWidth="1.5"
+        />
+        <circle
+          cx={r}
+          cy={cy}
+          r={r - 1}
+          fill="rgba(245,197,24,0.35)"
+          stroke="rgba(245,197,24,0.6)"
+          strokeWidth="1.2"
+        />
+        <circle
+          cx={w - r}
+          cy={cy}
+          r={r - 1}
+          fill="rgba(245,197,24,0.35)"
+          stroke="rgba(245,197,24,0.6)"
+          strokeWidth="1.2"
+        />
+      </svg>
+    </motion.div>
   );
 }
 
-/** Movie poster card in the chain */
+/** Movie poster card in the chain (unchanged from prior version). */
 function PosterNode({
   title,
   year,
@@ -111,18 +153,11 @@ function PosterNode({
       transition={{ delay, duration: 0.35, ease: "easeOut" }}
       className="flex flex-col items-center gap-1.5 flex-shrink-0"
     >
-      {/* Poster */}
       <div className="w-16 h-24 bg-cinema-card border border-white/[0.07] relative overflow-hidden flex-shrink-0">
         {posterUrl ? (
-          <Image
-            src={posterUrl}
-            alt={title}
-            fill
-            className="object-cover"
-          />
+          <Image src={posterUrl} alt={title} fill className="object-cover" />
         ) : (
           <>
-            {/* Striped placeholder */}
             <div
               className="absolute inset-0"
               style={{
@@ -141,10 +176,11 @@ function PosterNode({
           </>
         )}
       </div>
-
-      {/* Year */}
       {year && (
-        <span className="text-cinema-gold/45 tracking-[0.1em]" style={{ fontSize: 8 }}>
+        <span
+          className="text-cinema-gold/45 tracking-[0.1em]"
+          style={{ fontSize: 8 }}
+        >
           {year}
         </span>
       )}
@@ -153,15 +189,21 @@ function PosterNode({
 }
 
 /**
- * Win screen: "★ Movie Connection / Complete" headline +
- * a horizontally-scrolling chain of actor bubbles → movie posters → actor bubbles.
+ * Win screen: "★ {quip}" eyebrow, "Chain Complete" title,
+ * "{n} links · {difficulty}" stats, and a horizontally-scrolling chain.
  *
- * Each node animates in with a staggered delay for a cinematic reveal.
+ * The chain alternates: actor dot → connector (line+dots) → poster → connector → actor dot …
+ * Endpoint actors (start + end) are gold-filled and glow; intermediate actors are dim white dots.
  */
-export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain }: WinScreenProps) {
-  // Build the flat node list: actor, [line, movie, line, actor], ...
+export function WinScreen({
+  moves,
+  startActor,
+  endActor,
+  difficulty,
+  onPlayAgain,
+}: WinScreenProps) {
   type Node =
-    | { kind: "actor"; name: string; profileUrl?: string | null; highlight: boolean }
+    | { kind: "actor"; name: string; highlight: boolean }
     | { kind: "movie"; title: string; year: string | null; posterUrl: string | null }
     | { kind: "line" };
 
@@ -185,7 +227,8 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
     });
   });
 
-  const STEP = 0.1; // seconds between each node reveal
+  const STEP = 0.1;
+  const quip = pickRandom(WIN_QUIPS);
 
   return (
     <motion.div
@@ -194,13 +237,16 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
       transition={{ duration: 0.4 }}
       className="py-6"
     >
-      {/* Headline */}
+      {/* Eyebrow */}
       <p
         className="text-center text-cinema-gold/50 uppercase tracking-[0.45em] mb-1"
         style={{ fontSize: 9 }}
       >
-        ★ Movie Connection
+        {"\u2605 "}
+        {quip}
       </p>
+
+      {/* Title */}
       <motion.p
         animate={{ opacity: [0.8, 1, 0.8] }}
         transition={{ repeat: Infinity, duration: 2.5 }}
@@ -212,13 +258,16 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
           textShadow: "0 0 50px rgba(245,197,24,0.35)",
         }}
       >
-        Complete
+        Chain Complete
       </motion.p>
+
+      {/* Stats */}
       <p
         className="text-center text-cinema-silver/45 tracking-[0.15em] mb-8"
         style={{ fontSize: 10 }}
       >
-        {moves.length} move{moves.length !== 1 ? "s" : ""} &nbsp;·&nbsp; {difficulty}
+        {moves.length} link{moves.length !== 1 ? "s" : ""}{"\u00a0\u00b7\u00a0"}
+        {difficulty}
       </p>
 
       {/* Scrollable poster chain */}
@@ -226,7 +275,10 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
         {/* Fade-right hint */}
         <div className="absolute top-0 right-0 bottom-4 w-10 z-10 pointer-events-none bg-gradient-to-r from-transparent to-cinema-black" />
 
-        <div className="flex items-center overflow-x-auto gap-0 pb-4 pr-8" style={{ scrollbarWidth: "none" }}>
+        <div
+          className="flex items-center overflow-x-auto gap-2 pb-4 pr-8"
+          style={{ scrollbarWidth: "none" }}
+        >
           {nodes.map((node, idx) => {
             const delay = idx * STEP;
             if (node.kind === "line") return <ConnectorLine key={idx} delay={delay} />;
@@ -244,7 +296,6 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
               <ActorNode
                 key={idx}
                 name={node.name}
-                profileUrl={node.profileUrl}
                 highlight={node.highlight}
                 delay={delay}
               />
@@ -255,14 +306,17 @@ export function WinScreen({ moves, startActor, endActor, difficulty, onPlayAgain
 
       {/* CTA */}
       <motion.button
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.35 }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
         onClick={onPlayAgain}
-        className="w-full py-4 border border-cinema-gold text-cinema-gold font-mono
+        className="w-full py-4 bg-cinema-gold text-black font-bold
                    text-[10px] uppercase tracking-[0.3em]
-                   hover:bg-cinema-gold hover:text-black transition-all duration-200"
+                   hover:bg-cinema-gold/90 transition-all duration-200"
       >
-        Play Again
+        Start a New Game
       </motion.button>
     </motion.div>
   );
