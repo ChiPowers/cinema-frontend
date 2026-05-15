@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -93,6 +94,7 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
 function GameContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") ?? "";
+  const { data: session } = useSession();
   const [game, setGame] = useState<GameState | null>(null);
   const [movie, setMovie] = useState("");
   const [nextActor, setNextActor] = useState("");
@@ -103,12 +105,18 @@ function GameContent() {
   const movieRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  function authHeaders(): HeadersInit {
+    return session?.backendToken
+      ? { Authorization: `Bearer ${session.backendToken}` }
+      : {};
+  }
+
   useEffect(() => {
-    if (!id) return;
-    fetch(`${API}/game/${id}`)
+    if (!id || !session?.backendToken) return;
+    fetch(`${API}/game/${id}`, { headers: authHeaders() })
       .then((r) => r.json())
       .then(setGame);
-  }, [id]);
+  }, [id, session?.backendToken]);
 
   // Focus movie input when game loads
   useEffect(() => {
@@ -124,7 +132,7 @@ function GameContent() {
     try {
       const res = await fetch(`${API}/game/${id}/move`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ movie, next_actor: nextActor }),
       });
       const data = await res.json();
