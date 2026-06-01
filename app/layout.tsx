@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
 
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
@@ -16,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
       </head>
       <body className={`${mono.variable} font-mono text-white antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

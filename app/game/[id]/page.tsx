@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { CinematicInput }   from "@/components/CinematicInput";
 import { CorrectFlash }     from "@/components/CorrectFlash";
 import { WrongFlash }       from "@/components/WrongFlash";
@@ -305,6 +306,7 @@ function StreakBanner({ streak }: { streak: number }) {
 
 export default function GamePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
+  const { data: session } = useSession();
   const [game, setGame] = useState<GameState | null>(null);
   const [movie, setMovie] = useState("");
   const [nextActor, setNextActor] = useState("");
@@ -328,11 +330,18 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   const mainRef = useRef<HTMLElement>(null);
   const router = useRouter();
 
+  function authHeaders(): HeadersInit {
+    return session?.backendToken
+      ? { Authorization: `Bearer ${session.backendToken}` }
+      : {};
+  }
+
   useEffect(() => {
-    fetch(`${API}/game/${id}`)
+    if (!session?.backendToken) return;
+    fetch(`${API}/game/${id}`, { headers: authHeaders() })
       .then((r) => r.json())
       .then(setGame);
-  }, [id]);
+  }, [id, session?.backendToken]);
 
   useEffect(() => {
     if (game?.status === "in_progress") movieRef.current?.focus();
@@ -354,7 +363,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     try {
       const res = await fetch(`${API}/game/${id}/move`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ movie, next_actor: nextActor }),
       });
       const data = await res.json();
@@ -414,7 +423,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/game/${id}/move`, { method: "DELETE" });
+      const res = await fetch(`${API}/game/${id}/move`, { method: "DELETE", headers: authHeaders() });
       const data = await res.json();
       setGame((g) =>
         g
@@ -437,7 +446,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     if (!game || hintUsed || hintLoading || game.strikes >= 3) return;
     setHintLoading(true);
     try {
-      const res = await fetch(`${API}/game/${id}/hint`, { method: "POST" });
+      const res = await fetch(`${API}/game/${id}/hint`, { method: "POST", headers: authHeaders() });
       if (!res.ok) throw new Error();
       const data = await res.json();
       setHintText(data.hint ?? data.explanation ?? "Try thinking about films from the late 90s or early 2000s.");

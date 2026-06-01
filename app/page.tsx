@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -17,12 +18,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { data: session } = useSession();
 
   async function startGame() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/game/new?difficulty=${difficulty}`, { method: "POST" });
+      const res = await fetch(`${API}/game/new?difficulty=${difficulty}`, {
+        method: "POST",
+        headers: session?.backendToken
+          ? { Authorization: `Bearer ${session.backendToken}` }
+          : {},
+      });
       if (!res.ok) throw new Error("Failed to generate puzzle");
       const data = await res.json();
       router.push(`/game/${data.game_id}`);
