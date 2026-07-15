@@ -55,7 +55,7 @@ Access requires a Google sign-in plus presence on the backend's beta-user allowl
 
 1. The middleware (`middleware.ts`) protects every route except `/login` and `/api/auth/*`. An unauthenticated visit redirects to `/login`.
 2. The user clicks "Sign in with Google" on `/login`. NextAuth runs the Google OAuth dance.
-3. NextAuth's `signIn` callback (in `app/api/auth/[...nextauth]/route.ts`) calls `POST ${BACKEND_URL}/auth/check-beta` with `x-internal-secret: <INTERNAL_SECRET>` and the user's email. If the backend returns non-2xx, sign-in is refused and the login page shows "Your account is not on the beta list yet." (controlled by the `error=AccessDenied` query param).
+3. NextAuth's `signIn` callback (in `lib/auth.ts`, wired up by `app/api/auth/[...nextauth]/route.ts`) calls `POST ${BACKEND_URL}/auth/check-beta` with `x-internal-secret: <INTERNAL_SECRET>` and the user's email. If the backend returns non-2xx, sign-in is refused and the login page shows "Your account is not on the beta list yet." (controlled by the `error=AccessDenied` query param).
 4. On success, the `session` callback mints an HS256 JWT signed with `NEXTAUTH_SECRET` and stores it on the session as `backendToken`.
 5. All subsequent `/game/*` fetches attach `Authorization: Bearer <backendToken>`. The backend's `require_auth` dependency verifies the JWT with the same `NEXTAUTH_SECRET`.
 
@@ -72,6 +72,24 @@ Two independent gates control beta access, and both must pass:
   ```
 
 Adding someone in only one place is not enough.
+
+## Docker
+
+Build the image, supplying the browser-visible API URL as a build arg. `NEXT_PUBLIC_*` variables are inlined into the client bundle at build time, so this cannot be supplied later at `docker run`:
+
+```bash
+docker build -t cinema-game-frontend --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000 .
+```
+
+Run it, supplying the remaining variables from `.env.local` at runtime:
+
+```bash
+docker run -p 3000:3000 --env-file .env.local -e BACKEND_URL=http://localhost:8000 cinema-game-frontend
+```
+
+The UI is then available at `http://localhost:3000`. If running both containers together, put them on the same Docker network and point `BACKEND_URL` at the backend container's name rather than `localhost`.
+
+A `docker-compose.yml` to run this frontend together with the [backend](https://github.com/ChiPowers/cinema_game), with env file wiring for both, is planned as a follow-up once both repos' Dockerfiles have landed.
 
 ## Related
 
