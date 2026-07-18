@@ -1,0 +1,17 @@
+.git
+.gitignore
+.github
+.idea
+.vscode
+node_modules
+.next
+.wrangler
+.env*.local
+.env.production
+npm-debug.log*
+tsconfig.tsbuildinfo
+Dockerfile
+.dockerignore
+docker-compose*.yml
+README.md
+LICENSE
