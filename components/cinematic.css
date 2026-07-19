@@ -14,15 +14,34 @@
   height: 12px;
   border-color: rgba(245, 197, 24, 0.2);
   border-style: solid;
-  transition: border-color 0.25s ease, width 0.25s ease, height 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    width 0.25s ease,
+    height 0.25s ease;
   z-index: 2;
   pointer-events: none;
 }
 
-.cinematic-wrap::before  { top: -2px;    left: -2px;  border-width: 2px 0 0 2px; }
-.cinematic-wrap::after   { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
-.cinematic-corners::before { top: -2px;    right: -2px; border-width: 2px 2px 0 0; }
-.cinematic-corners::after  { bottom: -2px; left: -2px;  border-width: 0 0 2px 2px; }
+.cinematic-wrap::before {
+  top: -2px;
+  left: -2px;
+  border-width: 2px 0 0 2px;
+}
+.cinematic-wrap::after {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 2px 2px 0;
+}
+.cinematic-corners::before {
+  top: -2px;
+  right: -2px;
+  border-width: 2px 2px 0 0;
+}
+.cinematic-corners::after {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 2px 2px;
+}
 
 .cinematic-wrap:focus-within::before,
 .cinematic-wrap:focus-within::after,
@@ -39,7 +58,12 @@
   right: 0;
   top: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(245, 197, 24, 0.55), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245, 197, 24, 0.55),
+    transparent
+  );
   z-index: 3;
   opacity: 0;
   pointer-events: none;
@@ -51,61 +75,124 @@
 }
 
 @keyframes cinematicScan {
-  0%   { top: 0%;   opacity: 0; }
-  8%   { opacity: 1; }
-  92%  { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 /* ─── CorrectFlash ──────────────────────────────────────────────── */
 
 @keyframes projectorCut {
-  0%   { opacity: 0; }
-  8%   { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes titleSlam {
-  from { transform: scale(1.45); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes titleExit {
-  to { opacity: 0; transform: scale(1.05); }
+  to {
+    opacity: 0;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes spotlightFade {
-  0%   { opacity: 0; }
-  20%  { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ─── WrongFlash ────────────────────────────────────────────────── */
 
 @keyframes vignetteFlash {
-  0%   { opacity: 0; }
-  15%  { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes xSlam {
-  from { transform: scale(2.2); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
+  from {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes xExit {
-  to { opacity: 0; transform: scale(1.08); }
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+  }
 }
 
 @keyframes bodyShake {
-  0%,100% { transform: translateX(0) rotate(0deg); }
-  10%  { transform: translateX(-7px) rotate(-0.4deg); }
-  20%  { transform: translateX(7px)  rotate(0.4deg); }
-  30%  { transform: translateX(-5px); }
-  40%  { transform: translateX(5px); }
-  55%  { transform: translateX(-3px); }
-  70%  { transform: translateX(3px); }
-  85%  { transform: translateX(-1px); }
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  10% {
+    transform: translateX(-7px) rotate(-0.4deg);
+  }
+  20% {
+    transform: translateX(7px) rotate(0.4deg);
+  }
+  30% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  55% {
+    transform: translateX(-3px);
+  }
+  70% {
+    transform: translateX(3px);
+  }
+  85% {
+    transform: translateX(-1px);
+  }
 }
 
 .cinema-shake {
@@ -115,9 +202,15 @@
 /* ─── LinkProgress: forge animation ────────────────────────────── */
 
 @keyframes forgeGlow {
-  0%   { filter: drop-shadow(0 0 3px rgba(245, 197, 24, 0.3)); }
-  45%  { filter: drop-shadow(0 0 14px rgba(245, 197, 24, 1)); }
-  100% { filter: drop-shadow(0 0 5px rgba(245, 197, 24, 0.55)); }
+  0% {
+    filter: drop-shadow(0 0 3px rgba(245, 197, 24, 0.3));
+  }
+  45% {
+    filter: drop-shadow(0 0 14px rgba(245, 197, 24, 1));
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(245, 197, 24, 0.55));
+  }
 }
 
 .link-ring-done {
@@ -205,8 +298,14 @@
 }
 
 @keyframes thumbIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .cinema-actor-thumb-fill {
@@ -243,20 +342,34 @@
 /* ─── WinScreen: poster chain ───────────────────────────────────── */
 
 @keyframes chainNodeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─── Film reel spin ────────────────────────────────────────────── */
 
 @keyframes reelSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes reelSpinRev {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 .reel-rotating {
@@ -274,8 +387,12 @@
 /* ─── Filmstrip tape scroll ─────────────────────────────────────── */
 
 @keyframes tapeScrollH {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .tape-scroll {
@@ -295,8 +412,14 @@
 /* ─── Streak banner ─────────────────────────────────────────────── */
 
 @keyframes streakPop {
-  from { opacity: 0; transform: scale(0.7) translateY(-6px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .streak-pill {

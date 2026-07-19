@@ -40,24 +40,14 @@ export function ActorPosterThumb({
   tint = "#111827",
 }: ActorPosterThumbProps) {
   return (
-    <div
-      className="cinema-actor-thumb"
-      style={{ background: tint }}
-    >
+    <div className="cinema-actor-thumb" style={{ background: tint }}>
       {posterUrl ? (
-        <Image
-          src={posterUrl}
-          alt={movieTitle ?? ""}
-          fill
-          className="object-cover"
-        />
+        <Image src={posterUrl} alt={movieTitle ?? ""} fill className="object-cover" />
       ) : (
         <>
           <div className="cinema-actor-thumb-fill" />
           <div className="cinema-actor-thumb-overlay" />
-          {movieTitle && (
-            <div className="cinema-actor-thumb-label">{movieTitle}</div>
-          )}
+          {movieTitle && <div className="cinema-actor-thumb-label">{movieTitle}</div>}
         </>
       )}
     </div>

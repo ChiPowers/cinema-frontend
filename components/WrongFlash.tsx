@@ -69,75 +69,70 @@ export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps)
     timerRef.current.push(t1, t2);
   }, [trigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const strikeLabel =
-    strikes >= 3 ? "Game Over" : `Strike ${strikes} of 3`;
+  const strikeLabel = strikes >= 3 ? "Game Over" : `Strike ${strikes} of 3`;
 
   return (
     <>
       {/* Screen-reader live region */}
-      <p
-        aria-live="assertive"
-        aria-atomic="true"
-        className="sr-only"
-      >
+      <p aria-live="assertive" aria-atomic="true" className="sr-only">
         {srMsg}
       </p>
 
-    <AnimatePresence>
-      {phase !== "idle" && (
-        <motion.div
-          key="wrong-overlay"
-          className="fixed inset-0 z-[195] pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: phase === "exit" ? 0 : 1 }}
-          transition={{ duration: phase === "exit" ? 0.5 : 0.15 }}
-        >
-          {/* Red edge vignette */}
+      <AnimatePresence>
+        {phase !== "idle" && (
           <motion.div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, transparent 30%, rgba(230,57,70,0.6) 100%)",
-            }}
+            key="wrong-overlay"
+            className="fixed inset-0 z-[195] pointer-events-none"
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0.4] }}
-            transition={{ duration: 0.8, times: [0, 0.15, 1] }}
-          />
-
-          {/* ✕ Stamp */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-            <motion.span
-              initial={{ scale: 2.2, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 350,
-                damping: 22,
-                mass: 0.7,
-              }}
-              className="text-red-500 leading-none select-none"
+            animate={{ opacity: phase === "exit" ? 0 : 1 }}
+            transition={{ duration: phase === "exit" ? 0.5 : 0.15 }}
+          >
+            {/* Red edge vignette */}
+            <motion.div
+              className="absolute inset-0"
               style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: "clamp(120px, 22vw, 200px)",
-                textShadow: "0 0 60px rgba(230,57,70,0.85)",
+                background:
+                  "radial-gradient(ellipse at center, transparent 30%, rgba(230,57,70,0.6) 100%)",
               }}
-            >
-              ✕
-            </motion.span>
-
-            <motion.span
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.12, duration: 0.25 }}
-              className="text-red-500/70 tracking-[0.5em] uppercase select-none"
-              style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}
-            >
-              {strikeLabel}
-            </motion.span>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+              animate={{ opacity: [0, 1, 0.4] }}
+              transition={{ duration: 0.8, times: [0, 0.15, 1] }}
+            />
+
+            {/* ✕ Stamp */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+              <motion.span
+                initial={{ scale: 2.2, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 350,
+                  damping: 22,
+                  mass: 0.7,
+                }}
+                className="text-red-500 leading-none select-none"
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "clamp(120px, 22vw, 200px)",
+                  textShadow: "0 0 60px rgba(230,57,70,0.85)",
+                }}
+              >
+                ✕
+              </motion.span>
+
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.12, duration: 0.25 }}
+                className="text-red-500/70 tracking-[0.5em] uppercase select-none"
+                style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                {strikeLabel}
+              </motion.span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

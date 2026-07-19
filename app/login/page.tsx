@@ -22,7 +22,9 @@ function LoginContent() {
         transition={{ duration: 0.9, ease: "easeOut" }}
         className="text-center w-full max-w-sm"
       >
-        <h1 className="text-6xl font-bold tracking-tighter mb-1 leading-none">CINEMA</h1>
+        <h1 className="text-6xl font-bold tracking-tighter mb-1 leading-none">
+          CINEMA
+        </h1>
         <h2 className="text-6xl font-bold tracking-tighter text-cinema-gold leading-none mb-6">
           GAME
         </h2>

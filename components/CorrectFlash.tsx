@@ -19,7 +19,10 @@ interface CorrectFlashProps {
  */
 export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
   const [phase, setPhase] = useState<"idle" | "flash" | "title" | "exit">("idle");
-  const [current, setCurrent] = useState<{ title: string; year?: string | null } | null>(null);
+  const [current, setCurrent] = useState<{
+    title: string;
+    year?: string | null;
+  } | null>(null);
   const [srMsg, setSrMsg] = useState("");
   const srToggle = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -56,11 +59,7 @@ export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
   return (
     <>
       {/* Screen-reader live region */}
-      <p
-        aria-live="assertive"
-        aria-atomic="true"
-        className="sr-only"
-      >
+      <p aria-live="assertive" aria-atomic="true" className="sr-only">
         {srMsg}
       </p>
 

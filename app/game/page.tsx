@@ -204,13 +204,7 @@ function GameContent() {
             transition={{ duration: 1.4 }}
             className="fixed inset-0 z-0"
           >
-            <Image
-              src={backdrop}
-              alt=""
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={backdrop} alt="" fill className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
           </motion.div>
         )}
@@ -245,7 +239,9 @@ function GameContent() {
         </button>
         <div className="ml-auto flex items-center gap-4 text-xs text-cinema-silver/40 uppercase tracking-widest">
           <span>{game.difficulty}</span>
-          <span>{game.moves.length} move{game.moves.length !== 1 ? "s" : ""}</span>
+          <span>
+            {game.moves.length} move{game.moves.length !== 1 ? "s" : ""}
+          </span>
         </div>
       </div>
       <div className="fixed bottom-0 left-0 right-0 h-12 bg-black z-20" />
@@ -254,7 +250,6 @@ function GameContent() {
       <div className="fixed inset-0 pointer-events-none z-10 scanlines" />
 
       <div className="relative z-10 flex flex-col px-8 pt-20 pb-20 max-w-xl mx-auto w-full">
-
         {/* Objective card */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -352,8 +347,12 @@ function GameContent() {
               animate={{ opacity: 1, x: 0 }}
               className="mb-5"
             >
-              <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Now with</p>
-              <p className="text-cinema-gold text-xl font-bold">{game.current_actor.name}</p>
+              <p className="text-white/30 text-xs tracking-widest uppercase mb-1">
+                Now with
+              </p>
+              <p className="text-cinema-gold text-xl font-bold">
+                {game.current_actor.name}
+              </p>
             </motion.div>
 
             {/* Move form */}

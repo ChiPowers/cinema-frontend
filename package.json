@@ -5,23 +5,44 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
-    "next": "^15.5.13",
+    "next": "^15.5.20",
     "next-auth": "^4.24.14",
     "react": "^19",
     "react-dom": "^19"
   },
+  "overrides": {
+    "uuid": "^11.1.1"
+  },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
     "autoprefixer": "^10.0.1",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.13",
+    "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^29.1.1",
     "postcss": "^8",
+    "prettier": "^3.9.5",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

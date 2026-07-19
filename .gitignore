@@ -8,6 +8,15 @@ out/
 # production
 build/
 
+# test coverage reports
+coverage/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # env files
 .env*.local
 .env.production

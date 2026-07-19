@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { CinematicInput }   from "@/components/CinematicInput";
-import { CorrectFlash }     from "@/components/CorrectFlash";
-import { WrongFlash }       from "@/components/WrongFlash";
-import { WinScreen }        from "@/components/WinScreen";
-import { LinkProgress }     from "@/components/LinkProgress";
+import { CinematicInput } from "@/components/CinematicInput";
+import { CorrectFlash } from "@/components/CorrectFlash";
+import { WrongFlash } from "@/components/WrongFlash";
+import { WinScreen } from "@/components/WinScreen";
+import { LinkProgress } from "@/components/LinkProgress";
 import { PosterBackground } from "@/components/PosterBackground";
 import { ActorPosterThumb } from "@/components/ActorPosterThumb";
 
@@ -49,31 +49,64 @@ function FilmReel({ reverse, goldHub }: { reverse?: boolean; goldHub?: boolean }
   const angles = [0, 72, 144, 216, 288];
   return (
     <svg width="90" height="90" viewBox="0 0 140 140" fill="none" aria-hidden="true">
-      <circle cx="70" cy="70" r="66" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" fill="#111" />
-      <circle cx="70" cy="70" r="62" stroke="rgba(255,255,255,0.07)" strokeWidth="4" strokeDasharray="4 9" fill="none" />
+      <circle
+        cx="70"
+        cy="70"
+        r="66"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="2.5"
+        fill="#111"
+      />
+      <circle
+        cx="70"
+        cy="70"
+        r="62"
+        stroke="rgba(255,255,255,0.07)"
+        strokeWidth="4"
+        strokeDasharray="4 9"
+        fill="none"
+      />
       <g className={reverse ? "reel-rotating-rev" : "reel-rotating"}>
         {angles.map((deg) => (
           <React.Fragment key={deg}>
             <line
-              x1="70" y1="70" x2="70" y2="18"
-              stroke="rgba(255,255,255,0.22)" strokeWidth="7" strokeLinecap="round"
+              x1="70"
+              y1="70"
+              x2="70"
+              y2="18"
+              stroke="rgba(255,255,255,0.22)"
+              strokeWidth="7"
+              strokeLinecap="round"
               transform={deg ? `rotate(${deg} 70 70)` : undefined}
             />
             <circle
-              cx="70" cy="24" r="7"
-              fill="#0a0a0a" stroke="rgba(255,255,255,0.22)" strokeWidth="1.5"
+              cx="70"
+              cy="24"
+              r="7"
+              fill="#0a0a0a"
+              stroke="rgba(255,255,255,0.22)"
+              strokeWidth="1.5"
               transform={deg ? `rotate(${deg} 70 70)` : undefined}
             />
           </React.Fragment>
         ))}
       </g>
       <circle
-        cx="70" cy="70" r="24"
+        cx="70"
+        cy="70"
+        r="24"
         fill="#1a1a1a"
         stroke={goldHub ? "rgba(245,197,24,0.4)" : "rgba(255,255,255,0.2)"}
         strokeWidth="2"
       />
-      <circle cx="70" cy="70" r="5" fill="#0a0a0a" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+      <circle
+        cx="70"
+        cy="70"
+        r="5"
+        fill="#0a0a0a"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }
@@ -87,7 +120,9 @@ function SprocketRow({ reverse }: { reverse?: boolean }) {
         <div
           key={i}
           style={{
-            width: 8, height: 8, borderRadius: 2,
+            width: 8,
+            height: 8,
+            borderRadius: 2,
             background: "#000",
             border: "1px solid rgba(255,255,255,0.22)",
             flexShrink: 0,
@@ -116,21 +151,60 @@ function ReelObjective({
   return (
     <div style={{ marginBottom: 32 }}>
       {/* Actor name row */}
-      <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, alignItems: "flex-end" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingBottom: 8,
+          alignItems: "flex-end",
+        }}
+      >
         <div style={{ width: 90, textAlign: "center" }}>
-          <div style={{ fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+          <div
+            style={{
+              fontSize: 7,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.35)",
+              marginBottom: 3,
+            }}
+          >
             from
           </div>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, lineHeight: 1.2, color: "#f5c518" }}>
+          <div
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 700,
+              fontSize: 12,
+              lineHeight: 1.2,
+              color: "#f5c518",
+            }}
+          >
             {startActor}
           </div>
         </div>
         <div style={{ flex: 1 }} />
         <div style={{ width: 90, textAlign: "center" }}>
-          <div style={{ fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>
+          <div
+            style={{
+              fontSize: 7,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.35)",
+              marginBottom: 3,
+            }}
+          >
             to
           </div>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, lineHeight: 1.2, color: "#fff" }}>
+          <div
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 700,
+              fontSize: 12,
+              lineHeight: 1.2,
+              color: "#fff",
+            }}
+          >
             {endActor}
           </div>
         </div>
@@ -144,36 +218,77 @@ function ReelObjective({
         </div>
 
         {/* Filmstrip tape */}
-        <div style={{ flex: 1, height: 90, position: "relative", overflow: "visible", zIndex: 1 }}>
+        <div
+          style={{
+            flex: 1,
+            height: 90,
+            position: "relative",
+            overflow: "visible",
+            zIndex: 1,
+          }}
+        >
           {/* Tape strip */}
-          <div style={{
-            position: "absolute", top: "50%", left: 0, right: 0,
-            transform: "translateY(-50%)",
-            height: 28,
-            background: "#1a1a1a",
-            borderTop: "1px solid rgba(255,255,255,0.14)",
-            borderBottom: "1px solid rgba(255,255,255,0.14)",
-            overflow: "hidden",
-          }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: 0,
+              right: 0,
+              transform: "translateY(-50%)",
+              height: 28,
+              background: "#1a1a1a",
+              borderTop: "1px solid rgba(255,255,255,0.14)",
+              borderBottom: "1px solid rgba(255,255,255,0.14)",
+              overflow: "hidden",
+            }}
+          >
             {/* Top sprocket holes */}
-            <div style={{ position: "absolute", top: 3, left: 0, right: 0, height: 8, overflow: "hidden", display: "flex" }}>
+            <div
+              style={{
+                position: "absolute",
+                top: 3,
+                left: 0,
+                right: 0,
+                height: 8,
+                overflow: "hidden",
+                display: "flex",
+              }}
+            >
               <SprocketRow />
             </div>
             {/* Bottom sprocket holes */}
-            <div style={{ position: "absolute", bottom: 3, left: 0, right: 0, height: 8, overflow: "hidden", display: "flex" }}>
+            <div
+              style={{
+                position: "absolute",
+                bottom: 3,
+                left: 0,
+                right: 0,
+                height: 8,
+                overflow: "hidden",
+                display: "flex",
+              }}
+            >
               <SprocketRow reverse />
             </div>
           </div>
 
           {/* Progress dots centered on tape */}
-          <div style={{
-            position: "absolute", top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 10,
-            background: "rgba(10,10,10,0.9)",
-            padding: "4px 6px",
-          }}>
-            <LinkProgress total={total} completed={completed} forgeTrigger={forgeTrigger} />
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 10,
+              background: "rgba(10,10,10,0.9)",
+              padding: "4px 6px",
+            }}
+          >
+            <LinkProgress
+              total={total}
+              completed={completed}
+              forgeTrigger={forgeTrigger}
+            />
           </div>
         </div>
 
@@ -190,18 +305,37 @@ function ReelObjective({
 
 function StrikeCounter({ strikes }: { strikes: number }) {
   return (
-    <div className="flex items-center gap-1.5" role="img" aria-label={`${strikes} of 3 strikes`}>
+    <div
+      className="flex items-center gap-1.5"
+      role="img"
+      aria-label={`${strikes} of 3 strikes`}
+    >
       {Array.from({ length: 3 }).map((_, i) => (
-        <svg key={i} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <svg
+          key={i}
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
           <line
-            x1="2" y1="2" x2="14" y2="14"
+            x1="2"
+            y1="2"
+            x2="14"
+            y2="14"
             stroke={i < strikes ? "#e63946" : "rgba(255,255,255,0.2)"}
-            strokeWidth="2.5" strokeLinecap="round"
+            strokeWidth="2.5"
+            strokeLinecap="round"
           />
           <line
-            x1="14" y1="2" x2="2" y2="14"
+            x1="14"
+            y1="2"
+            x2="2"
+            y2="14"
             stroke={i < strikes ? "#e63946" : "rgba(255,255,255,0.2)"}
-            strokeWidth="2.5" strokeLinecap="round"
+            strokeWidth="2.5"
+            strokeLinecap="round"
           />
         </svg>
       ))}
@@ -246,26 +380,73 @@ function MoveCard({
 
       {/* Body: from → movie → to */}
       <div className="flex flex-col justify-center min-w-0 flex-1" style={{ gap: 0 }}>
-        <div style={{ fontSize: 10, letterSpacing: "0.04em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", lineHeight: 1 }}>
+        <div
+          style={{
+            fontSize: 10,
+            letterSpacing: "0.04em",
+            color: "rgba(255,255,255,0.4)",
+            textTransform: "uppercase",
+            lineHeight: 1,
+          }}
+        >
           {move.from_actor}
         </div>
         <div style={{ display: "flex", alignItems: "center", padding: "3px 0" }}>
-          <div style={{ width: 1, height: 10, background: "rgba(245,197,24,0.25)", flexShrink: 0 }} />
+          <div
+            style={{
+              width: 1,
+              height: 10,
+              background: "rgba(245,197,24,0.25)",
+              flexShrink: 0,
+            }}
+          />
         </div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 6, minWidth: 0 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", fontStyle: "italic", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#fff",
+              fontStyle: "italic",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             {move.movie_title ?? move.movie}
           </span>
           {move.movie_year && (
-            <span style={{ fontSize: 9, color: "rgba(245,197,24,0.5)", letterSpacing: "0.05em", flexShrink: 0 }}>
+            <span
+              style={{
+                fontSize: 9,
+                color: "rgba(245,197,24,0.5)",
+                letterSpacing: "0.05em",
+                flexShrink: 0,
+              }}
+            >
               {move.movie_year}
             </span>
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", padding: "3px 0" }}>
-          <div style={{ width: 1, height: 10, background: "rgba(245,197,24,0.25)", flexShrink: 0 }} />
+          <div
+            style={{
+              width: 1,
+              height: 10,
+              background: "rgba(245,197,24,0.25)",
+              flexShrink: 0,
+            }}
+          />
         </div>
-        <div style={{ fontSize: 10, letterSpacing: "0.04em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", lineHeight: 1 }}>
+        <div
+          style={{
+            fontSize: 10,
+            letterSpacing: "0.04em",
+            color: "rgba(255,255,255,0.4)",
+            textTransform: "uppercase",
+            lineHeight: 1,
+          }}
+        >
           {move.to_actor}
         </div>
       </div>
@@ -285,16 +466,28 @@ function MoveCard({
 
 /* ─── Streak banner ─────────────────────────────────────────────── */
 
-const STREAK_LABELS = ["", "", "2 in a row! 🎬", "3-link combo! 🎞️", "On a roll! 🔥", "Unstoppable! ⭐"];
+const STREAK_LABELS = [
+  "",
+  "",
+  "2 in a row! 🎬",
+  "3-link combo! 🎞️",
+  "On a roll! 🔥",
+  "Unstoppable! ⭐",
+];
 
 function StreakBanner({ streak }: { streak: number }) {
   if (streak < 2) return null;
-  const label = STREAK_LABELS[Math.min(streak, STREAK_LABELS.length - 1)] ?? `${streak} straight! 🎬`;
+  const label =
+    STREAK_LABELS[Math.min(streak, STREAK_LABELS.length - 1)] ??
+    `${streak} straight! 🎬`;
   return (
     <div className="fixed top-14 left-0 right-0 z-30 flex justify-center pointer-events-none">
       <div
         className="streak-pill text-cinema-gold text-xs uppercase tracking-[0.2em] px-3 py-1"
-        style={{ background: "rgba(245,197,24,0.15)", border: "1px solid rgba(245,197,24,0.4)" }}
+        style={{
+          background: "rgba(245,197,24,0.15)",
+          border: "1px solid rgba(245,197,24,0.4)",
+        }}
       >
         {label}
       </div>
@@ -313,12 +506,15 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backdrop, setBackdrop] = useState<string | null>(null);
-  const [correctTrigger, setCorrectTrigger] = useState<
-    { title: string; year?: string | null; _key: number } | null
-  >(null);
-  const [wrongTrigger, setWrongTrigger] = useState<
-    { strikes: number; _key: number } | null
-  >(null);
+  const [correctTrigger, setCorrectTrigger] = useState<{
+    title: string;
+    year?: string | null;
+    _key: number;
+  } | null>(null);
+  const [wrongTrigger, setWrongTrigger] = useState<{
+    strikes: number;
+    _key: number;
+  } | null>(null);
   const [forgeKey, setForgeKey] = useState(0);
   const [streak, setStreak] = useState(0);
   const [streakVisible, setStreakVisible] = useState(false);
@@ -379,7 +575,11 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         }, 1700);
       } else {
         if (data.backdrop_url) setBackdrop(data.backdrop_url);
-        setCorrectTrigger({ title: data.movie_title ?? movie, year: data.movie_year ?? null, _key: Date.now() });
+        setCorrectTrigger({
+          title: data.movie_title ?? movie,
+          year: data.movie_year ?? null,
+          _key: Date.now(),
+        });
         setForgeKey((k) => k + 1);
         setHintText(null);
         setHintUsed(false);
@@ -423,7 +623,10 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/game/${id}/move`, { method: "DELETE", headers: authHeaders() });
+      const res = await fetch(`${API}/game/${id}/move`, {
+        method: "DELETE",
+        headers: authHeaders(),
+      });
       const data = await res.json();
       setGame((g) =>
         g
@@ -446,13 +649,20 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     if (!game || hintUsed || hintLoading || game.strikes >= 3) return;
     setHintLoading(true);
     try {
-      const res = await fetch(`${API}/game/${id}/hint`, { method: "POST", headers: authHeaders() });
+      const res = await fetch(`${API}/game/${id}/hint`, {
+        method: "POST",
+        headers: authHeaders(),
+      });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setHintText(data.hint ?? data.explanation ?? "Try thinking about films from the late 90s or early 2000s.");
+      setHintText(
+        data.hint ??
+          data.explanation ??
+          "Try thinking about films from the late 90s or early 2000s."
+      );
       setHintUsed(true);
       if (data.strikes !== undefined) {
-        setGame((g) => g ? { ...g, strikes: data.strikes } : g);
+        setGame((g) => (g ? { ...g, strikes: data.strikes } : g));
         setWrongTrigger({ strikes: data.strikes, _key: Date.now() });
       }
     } catch {
@@ -477,7 +687,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
     );
   }
 
-  const won  = game.status === "won";
+  const won = game.status === "won";
   const lost = game.status === "lost";
 
   return (
@@ -526,7 +736,9 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
         </div>
         <div className="ml-auto flex items-center gap-4 text-xs text-cinema-silver/40 uppercase tracking-widest">
           <span>{game.difficulty}</span>
-          <span>{game.moves.length} link{game.moves.length !== 1 ? "s" : ""}</span>
+          <span>
+            {game.moves.length} link{game.moves.length !== 1 ? "s" : ""}
+          </span>
         </div>
       </div>
       <div className="fixed bottom-0 left-0 right-0 h-12 bg-black z-20" />
@@ -535,7 +747,6 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
       <div className="fixed inset-0 pointer-events-none z-10 scanlines" />
 
       <div className="relative z-10 flex flex-col px-8 pt-20 pb-20 max-w-xl mx-auto w-full">
-
         {/* Reel objective */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <ReelObjective
@@ -643,18 +854,50 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                 onClick={getHint}
                 disabled={hintUsed || hintLoading || game.strikes >= 3}
                 className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.15em] px-2.5 py-1.5 transition-all disabled:opacity-30"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.45)" }}
-                onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = "#f5c518"; e.currentTarget.style.color = "#f5c518"; } }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
+                style={{
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.45)",
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.borderColor = "#f5c518";
+                    e.currentTarget.style.color = "#f5c518";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.45)";
+                }}
               >
                 <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                  <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.3" />
-                  <path d="M5.5 3v2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  <circle
+                    cx="5.5"
+                    cy="5.5"
+                    r="4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                  />
+                  <path
+                    d="M5.5 3v2.5"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                  />
                   <circle cx="5.5" cy="8" r=".6" fill="currentColor" />
                 </svg>
                 {hintUsed ? "Hint used" : hintLoading ? "…" : "Hint"}
                 {!hintUsed && (
-                  <span style={{ display: "inline-block", background: "rgba(245,197,24,0.12)", color: "rgba(245,197,24,0.8)", fontSize: 9, letterSpacing: "0.1em", padding: "2px 6px", border: "1px solid rgba(245,197,24,0.3)" }}>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      background: "rgba(245,197,24,0.12)",
+                      color: "rgba(245,197,24,0.8)",
+                      fontSize: 9,
+                      letterSpacing: "0.1em",
+                      padding: "2px 6px",
+                      border: "1px solid rgba(245,197,24,0.3)",
+                    }}
+                  >
                     -1 strike
                   </span>
                 )}
@@ -672,7 +915,11 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
                 >
                   <p
                     className="text-xs leading-relaxed px-3 py-2"
-                    style={{ color: "rgba(245,197,24,0.85)", border: "1px solid rgba(245,197,24,0.2)", background: "rgba(245,197,24,0.05)" }}
+                    style={{
+                      color: "rgba(245,197,24,0.85)",
+                      border: "1px solid rgba(245,197,24,0.2)",
+                      background: "rgba(245,197,24,0.05)",
+                    }}
                     dangerouslySetInnerHTML={{ __html: hintText }}
                   />
                 </motion.div>
