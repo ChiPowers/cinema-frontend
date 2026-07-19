@@ -70,7 +70,9 @@ export default function Home() {
 
         {/* Difficulty */}
         <div className="mb-8">
-          <p className="text-cinema-silver/50 text-xs tracking-widest uppercase mb-3">Select difficulty</p>
+          <p className="text-cinema-silver/50 text-xs tracking-widest uppercase mb-3">
+            Select difficulty
+          </p>
           <div className="flex gap-2 justify-center">
             {(["easy", "medium", "hard"] as const).map((d) => (
               <button
@@ -91,9 +93,7 @@ export default function Home() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-red-400 text-xs mb-4">{error}</p>
-        )}
+        {error && <p className="text-red-400 text-xs mb-4">{error}</p>}
 
         <motion.button
           whileHover={{ scale: 1.02 }}

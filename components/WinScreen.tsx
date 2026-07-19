@@ -177,10 +177,7 @@ function PosterNode({
         )}
       </div>
       {year && (
-        <span
-          className="text-cinema-gold/45 tracking-[0.1em]"
-          style={{ fontSize: 8 }}
-        >
+        <span className="text-cinema-gold/45 tracking-[0.1em]" style={{ fontSize: 8 }}>
           {year}
         </span>
       )}
@@ -266,7 +263,8 @@ export function WinScreen({
         className="text-center text-cinema-silver/45 tracking-[0.15em] mb-8"
         style={{ fontSize: 10 }}
       >
-        {moves.length} link{moves.length !== 1 ? "s" : ""}{"\u00a0\u00b7\u00a0"}
+        {moves.length} link{moves.length !== 1 ? "s" : ""}
+        {"\u00a0\u00b7\u00a0"}
         {difficulty}
       </p>
 

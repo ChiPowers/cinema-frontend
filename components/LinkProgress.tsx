@@ -47,7 +47,10 @@ export function LinkProgress({ total, completed, forgeTrigger }: LinkProgressPro
         return (
           <line
             key={`line-${i}`}
-            x1={cx} y1={y1} x2={cx} y2={y2}
+            x1={cx}
+            y1={y1}
+            x2={cx}
+            y2={y2}
             stroke={done ? "rgba(245,197,24,0.6)" : "rgba(255,255,255,0.15)"}
             strokeWidth="2"
             strokeDasharray={done ? undefined : "3,3"}

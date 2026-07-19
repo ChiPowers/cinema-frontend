@@ -26,14 +26,14 @@ You will also need the [backend](https://github.com/ChiPowers/cinema_game) runni
 
 All environment variables live in `.env.local`, which is gitignored. Start from the tracked `.env.example` and fill in real values.
 
-| Variable | Purpose |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Browser-visible URL of the backend (`/game/*` endpoints). |
-| `BACKEND_URL` | Server-side URL of the backend; used by the NextAuth `signIn` callback to call `/auth/check-beta`. Often the same as `NEXT_PUBLIC_API_URL` in local development. |
-| `GOOGLE_CLIENT_ID` | OAuth 2.0 Client ID from Google Cloud Console. |
-| `GOOGLE_CLIENT_SECRET` | OAuth 2.0 Client Secret from Google Cloud Console. |
-| `NEXTAUTH_SECRET` | HS256 key used by NextAuth to sign session JWTs that the backend verifies. **Must match the backend's `NEXTAUTH_SECRET` byte-for-byte.** Generate with `openssl rand -base64 32`. |
-| `INTERNAL_SECRET` | Shared secret sent as `x-internal-secret` on server-to-server calls to `/auth/check-beta`. **Must match the backend's `INTERNAL_SECRET` byte-for-byte.** Generate with `openssl rand -base64 32`. |
+| Variable               | Purpose                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`  | Browser-visible URL of the backend (`/game/*` endpoints).                                                                                                                                         |
+| `BACKEND_URL`          | Server-side URL of the backend; used by the NextAuth `signIn` callback to call `/auth/check-beta`. Often the same as `NEXT_PUBLIC_API_URL` in local development.                                  |
+| `GOOGLE_CLIENT_ID`     | OAuth 2.0 Client ID from Google Cloud Console.                                                                                                                                                    |
+| `GOOGLE_CLIENT_SECRET` | OAuth 2.0 Client Secret from Google Cloud Console.                                                                                                                                                |
+| `NEXTAUTH_SECRET`      | HS256 key used by NextAuth to sign session JWTs that the backend verifies. **Must match the backend's `NEXTAUTH_SECRET` byte-for-byte.** Generate with `openssl rand -base64 32`.                 |
+| `INTERNAL_SECRET`      | Shared secret sent as `x-internal-secret` on server-to-server calls to `/auth/check-beta`. **Must match the backend's `INTERNAL_SECRET` byte-for-byte.** Generate with `openssl rand -base64 32`. |
 
 ### Google OAuth client setup
 
@@ -72,6 +72,38 @@ Two independent gates control beta access, and both must pass:
   ```
 
 Adding someone in only one place is not enough.
+
+## Testing
+
+| Command                                   | What it does                                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`                            | ESLint (`eslint-config-next`).                                                                                                                    |
+| `npm run format` / `npm run format:check` | Prettier.                                                                                                                                         |
+| `npm test`                                | Unit/component tests (Vitest + React Testing Library).                                                                                            |
+| `npm run test:coverage`                   | Same, with a coverage report (`text` + `html`, no enforced threshold yet — the suite is new, so coverage is reported honestly rather than gated). |
+| `npm run test:e2e`                        | Playwright — see below. Requires `npm run dev` already running in another terminal.                                                               |
+
+All of the above except `test:e2e` run in CI on every push/PR to `main` (`.github/workflows/build.yml`).
+
+### Why Playwright stops at the Google redirect
+
+`npm run test:e2e` has exactly one test: it clicks "Sign in with Google" on `/login` and asserts the browser is redirected to `accounts.google.com`. It deliberately goes no further than that.
+
+Google's real sign-in screen cannot be driven reliably by an automated test without a dedicated, always-available test account with 2FA disabled — a security tradeoff not worth making for this. Everything that happens _after_ Google redirects back (the `signIn` callback's beta-check call, the `session` callback minting the backend JWT, failure paths) is instead covered by `lib/auth.test.ts`, with `fetch` mocked. That combination — a real-browser check that the redirect itself is wired correctly, plus mocked unit tests for everything past it — is why Playwright is not run in CI: a CI runner has no way to complete a real Google login, and there is nothing left on this side of the redirect worth re-testing there.
+
+### Dependency security overrides
+
+`package.json`'s `overrides` field forces a handful of transitive dependencies to patched versions where the direct dependency that pulls them in has not (or cannot) update on its own:
+
+| Override                            | Why                                                                                                                                                                                                              |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `uuid` → `^11.1.1`                  | `next-auth@4.24.14` (the latest v4 release) still depends on a vulnerable `uuid@8.3.2`. Confirmed safe: `next-auth` only calls the stable `uuid.v4()` function, unchanged since `uuid` v3.                       |
+| `picomatch@2.3.1` → `^2.3.2`        | Pulled in via `tailwindcss`'s `chokidar`/`micromatch` chain. Version-scoped (not a blanket override) so it does not affect the separate, already-patched `picomatch@4.x` that `vite`/`vitest` use independently. |
+| `next` → `{ "postcss": "^8.5.19" }` | Next.js bundles its own internal `postcss` copy, independent of this repo's own `postcss` dependency. Nested so only `next`'s copy is affected.                                                                  |
+
+Run `npm audit` to confirm these (and anything new) are still clean.
+
+If you ever change an entry in `overrides` and `npm install` doesn't seem to pick it up (the old nested version stays installed), this is a known npm quirk: delete `package-lock.json` and `node_modules` and reinstall from scratch. A plain `npm install` on top of an existing lockfile does not always fully re-resolve a changed override.
 
 ## Docker
 

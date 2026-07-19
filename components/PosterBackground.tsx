@@ -16,10 +16,10 @@ interface PosterBackgroundProps {
 }
 
 const POSITIONS = [
-  { top: "28%", left: "-58px",  rotate: "-8deg",  scale: 1.0  },
-  { top: "18%", right: "-52px", rotate: "10deg",  scale: 0.95 },
-  { top: "55%", right: "-60px", rotate: "6deg",   scale: 1.05 },
-  { top: "50%", left: "-50px",  rotate: "-13deg", scale: 0.9  },
+  { top: "28%", left: "-58px", rotate: "-8deg", scale: 1.0 },
+  { top: "18%", right: "-52px", rotate: "10deg", scale: 0.95 },
+  { top: "55%", right: "-60px", rotate: "6deg", scale: 1.05 },
+  { top: "50%", left: "-50px", rotate: "-13deg", scale: 0.9 },
 ];
 
 /**
@@ -46,7 +46,7 @@ export function PosterBackground({ entries }: PosterBackgroundProps) {
         const style: React.CSSProperties = {
           position: "absolute",
           top: pos.top,
-          ...(pos.left  ? { left:  pos.left  } : {}),
+          ...(pos.left ? { left: pos.left } : {}),
           ...(pos.right ? { right: pos.right } : {}),
           // CSS custom property drives both from/to transforms in @keyframes
           ["--poster-rot" as string]: `rotate(${pos.rotate}) scale(${pos.scale})`,
@@ -54,11 +54,7 @@ export function PosterBackground({ entries }: PosterBackgroundProps) {
         };
 
         return (
-          <div
-            key={idx}
-            className="cinema-bg-poster"
-            style={style}
-          >
+          <div key={idx} className="cinema-bg-poster" style={style}>
             {entry.posterUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

@@ -20,17 +20,14 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if (!user.email) return false;
       try {
-        const res = await fetch(
-          `${process.env.BACKEND_URL}/auth/check-beta`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-internal-secret": process.env.INTERNAL_SECRET!,
-            },
-            body: JSON.stringify({ email: user.email }),
-          }
-        );
+        const res = await fetch(`${process.env.BACKEND_URL}/auth/check-beta`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-secret": process.env.INTERNAL_SECRET!,
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
         return res.ok;
       } catch {
         return false;
