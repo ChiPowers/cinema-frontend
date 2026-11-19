@@ -68,7 +68,7 @@ export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
         {phase === "flash" && (
           <motion.div
             key="flash"
-            className="fixed inset-0 z-[200] bg-white pointer-events-none"
+            className="fixed inset-0 z-200 bg-white pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
             transition={{ duration: 0.55, times: [0, 0.08, 1] }}
@@ -81,7 +81,7 @@ export function CorrectFlash({ trigger, onDone }: CorrectFlashProps) {
         {(phase === "title" || phase === "exit") && current && (
           <motion.div
             key="title-card"
-            className="fixed inset-0 z-[190] flex flex-col items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-190 flex flex-col items-center justify-center pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: phase === "exit" ? 0 : 1 }}
             transition={{ duration: phase === "exit" ? 0.55 : 0.15 }}

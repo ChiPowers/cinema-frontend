@@ -82,7 +82,7 @@ export function WrongFlash({ trigger, shakeTargetRef, onDone }: WrongFlashProps)
         {phase !== "idle" && (
           <motion.div
             key="wrong-overlay"
-            className="fixed inset-0 z-[195] pointer-events-none"
+            className="fixed inset-0 z-195 pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: phase === "exit" ? 0 : 1 }}
             transition={{ duration: phase === "exit" ? 0.5 : 0.15 }}
