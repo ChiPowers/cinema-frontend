@@ -3,7 +3,7 @@ import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
   title: "Cinema Game",

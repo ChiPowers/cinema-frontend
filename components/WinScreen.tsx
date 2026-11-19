@@ -49,10 +49,10 @@ function ActorNode({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.35, ease: "easeOut" }}
-      className="flex flex-col items-center gap-1.5 flex-shrink-0"
+      className="flex flex-col items-center gap-1.5 shrink-0"
     >
       <div
-        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 border-[1.5px]"
+        className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 border-[1.5px]"
         style={{
           background: highlight ? "rgba(245,197,24,0.12)" : "rgba(20,20,20,0.6)",
           borderColor: highlight ? "rgba(245,197,24,0.7)" : "rgba(255,255,255,0.15)",
@@ -81,7 +81,7 @@ function ActorNode({
         </svg>
       </div>
       <span
-        className={`text-center leading-tight max-w-[72px] uppercase tracking-[0.05em]
+        className={`text-center leading-tight max-w-[72px] uppercase tracking-wider
           ${highlight ? "text-cinema-gold" : "text-white/45"}`}
         style={{ fontSize: 8 }}
       >
@@ -102,7 +102,7 @@ function ConnectorLine({ delay }: { delay: number }) {
       initial={{ opacity: 0, scaleX: 0 }}
       animate={{ opacity: 1, scaleX: 1 }}
       transition={{ delay, duration: 0.25, ease: "easeOut" }}
-      className="flex-shrink-0 origin-left"
+      className="shrink-0 origin-left"
     >
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none">
         <line
@@ -151,9 +151,9 @@ function PosterNode({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.35, ease: "easeOut" }}
-      className="flex flex-col items-center gap-1.5 flex-shrink-0"
+      className="flex flex-col items-center gap-1.5 shrink-0"
     >
-      <div className="w-16 h-24 bg-cinema-card border border-white/[0.07] relative overflow-hidden flex-shrink-0">
+      <div className="w-16 h-24 bg-cinema-card border border-white/[0.07] relative overflow-hidden shrink-0">
         {posterUrl ? (
           <Image src={posterUrl} alt={title} fill className="object-cover" />
         ) : (
@@ -165,7 +165,7 @@ function PosterNode({
                   "repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 4px, transparent 4px, transparent 10px)",
               }}
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1 pb-1 pt-3">
+            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 to-transparent px-1 pb-1 pt-3">
               <p
                 className="text-white/70 text-center leading-tight"
                 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 10 }}
@@ -177,7 +177,7 @@ function PosterNode({
         )}
       </div>
       {year && (
-        <span className="text-cinema-gold/45 tracking-[0.1em]" style={{ fontSize: 8 }}>
+        <span className="text-cinema-gold/45 tracking-widest" style={{ fontSize: 8 }}>
           {year}
         </span>
       )}
@@ -271,7 +271,7 @@ export function WinScreen({
       {/* Scrollable poster chain */}
       <div className="relative mb-8">
         {/* Fade-right hint */}
-        <div className="absolute top-0 right-0 bottom-4 w-10 z-10 pointer-events-none bg-gradient-to-r from-transparent to-cinema-black" />
+        <div className="absolute top-0 right-0 bottom-4 w-10 z-10 pointer-events-none bg-linear-to-r from-transparent to-cinema-black" />
 
         <div
           className="flex items-center overflow-x-auto gap-2 pb-4 pr-8"

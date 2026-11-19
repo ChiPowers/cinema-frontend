@@ -40,7 +40,7 @@ export function CinematicInput({
         {/* TAKE badge */}
         {takeLabel && (
           <span
-            className="absolute -top-[9px] right-2.5 z-10 px-1.5 text-[8px] tracking-[0.15em]
+            className="absolute top-[-9px] right-2.5 z-10 px-1.5 text-[8px] tracking-[0.15em]
                        uppercase bg-cinema-black text-cinema-gold/40 pointer-events-none
                        transition-colors duration-200
                        [.cinematic-wrap:focus-within_&]:text-cinema-gold"
@@ -60,13 +60,13 @@ export function CinematicInput({
           autoComplete="off"
           spellCheck={false}
           className="
-            w-full relative z-[1]
-            bg-[rgba(10,10,10,0.9)] border border-white/[0.08]
+            w-full relative z-1
+            bg-[rgba(10,10,10,0.9)] border border-white/8
             px-4 py-3.5
             font-mono text-[13px] text-white
             placeholder:text-white/15
             caret-cinema-gold
-            outline-none
+            outline-hidden
             transition-[border-color,background,box-shadow] duration-200
             focus:border-cinema-gold/40
             focus:bg-[rgba(16,14,4,0.95)]

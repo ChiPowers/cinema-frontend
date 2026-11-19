@@ -95,11 +95,11 @@ Google's real sign-in screen cannot be driven reliably by an automated test with
 
 `package.json`'s `overrides` field forces a handful of transitive dependencies to patched versions where the direct dependency that pulls them in has not (or cannot) update on its own:
 
-| Override                            | Why                                                                                                                                                                                                              |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `uuid` → `^11.1.1`                  | `next-auth@4.24.14` (the latest v4 release) still depends on a vulnerable `uuid@8.3.2`. Confirmed safe: `next-auth` only calls the stable `uuid.v4()` function, unchanged since `uuid` v3.                       |
-| `picomatch@2.3.1` → `^2.3.2`        | Pulled in via `tailwindcss`'s `chokidar`/`micromatch` chain. Version-scoped (not a blanket override) so it does not affect the separate, already-patched `picomatch@4.x` that `vite`/`vitest` use independently. |
-| `next` → `{ "postcss": "^8.5.19" }` | Next.js bundles its own internal `postcss` copy, independent of this repo's own `postcss` dependency. Nested so only `next`'s copy is affected.                                                                  |
+| Override                            | Why                                                                                                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `uuid` → `^11.1.1`                  | `next-auth@4.24.14` (the latest v4 release) still depends on a vulnerable `uuid@8.3.2`. Confirmed safe: `next-auth` only calls the stable `uuid.v4()` function, unchanged since `uuid` v3.                                                                                |
+| `picomatch@2.3.1` → `^2.3.2`        | Pulled in via `@next/eslint-plugin-next`'s `fast-glob`/`micromatch` chain (Tailwind CSS v4 no longer brings this in). Version-scoped (not a blanket override) so it does not affect the separate, already-patched `picomatch@4.x` that `vite`/`vitest` use independently. |
+| `next` → `{ "postcss": "^8.5.19" }` | Next.js bundles its own internal `postcss` copy, independent of this repo's own `postcss` dependency. Nested so only `next`'s copy is affected.                                                                                                                           |
 
 Run `npm audit` to confirm these (and anything new) are still clean.
 

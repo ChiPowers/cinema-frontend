@@ -40,7 +40,7 @@ export function PosterBackground({ entries }: PosterBackgroundProps) {
   });
 
   return (
-    <div className="fixed inset-0 z-[1] pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-1 pointer-events-none overflow-hidden">
       {entries.map((entry, idx) => {
         const pos = POSITIONS[idx % POSITIONS.length];
         const style: React.CSSProperties = {

@@ -1,11 +1,61 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@import "../components/cinematic.css";
+@import "../components/cinematic.css" layer(utilities);
+
+@theme {
+  --color-cinema-black: #0a0a0a;
+  --color-cinema-dark: #111111;
+  --color-cinema-card: #1a1a1a;
+  --color-cinema-gold: #f5c518;
+  --color-cinema-silver: #9ca3af;
+
+  /* v4's default reds are oklch and shift the error / game-over text. */
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+
+  /*
+    v3 line-heights were fixed lengths (1rem, 1.25rem, …). v4 uses the same
+    ratio as a unitless number, which is recomputed against a child's font-size.
+    Nested sizes such as text-[9px] inside text-xs then get a shorter line box.
+  */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-xl--line-height: 1.75rem;
+  --text-3xl--line-height: 2.25rem;
+}
+
+/*
+  next/font sets --font-jetbrains-mono on <body> (see app/layout.tsx).
+  The theme token uses a different name so it does not reference itself.
+*/
+@theme inline {
+  --font-mono: var(--font-jetbrains-mono), monospace;
+}
+
+/*
+  Tailwind v4 changed two Preflight defaults that this UI depended on:
+  border color is now currentColor, and buttons use the browser cursor.
+  These base rules keep the v3 look. Drop the border rule only after every
+  border utility sets an explicit color.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 :root {
-  --font-mono: "JetBrains Mono", monospace;
+  --font-jetbrains-mono: "JetBrains Mono", monospace;
 }
 
 body {

@@ -41,12 +41,12 @@ function FilmFrame({ children }: { children: React.ReactNode }) {
       {/* Sprocket holes */}
       <div className="absolute -left-5 top-0 bottom-0 flex flex-col justify-around py-1 gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-3 h-3 rounded-sm bg-black border border-white/10" />
+          <div key={i} className="w-3 h-3 rounded-xs bg-black border border-white/10" />
         ))}
       </div>
       <div className="absolute -right-5 top-0 bottom-0 flex flex-col justify-around py-1 gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-3 h-3 rounded-sm bg-black border border-white/10" />
+          <div key={i} className="w-3 h-3 rounded-xs bg-black border border-white/10" />
         ))}
       </div>
       {children}
@@ -60,7 +60,7 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 bg-cinema-card border border-white/5 p-3 rounded-sm"
+      className="flex items-center gap-3 bg-cinema-card border border-white/5 p-3 rounded-xs"
     >
       {move.poster_url ? (
         <Image
@@ -68,10 +68,10 @@ function MoveCard({ move, index }: { move: Move; index: number }) {
           alt={move.movie_title ?? ""}
           width={36}
           height={54}
-          className="object-cover rounded-sm flex-shrink-0"
+          className="object-cover rounded-xs shrink-0"
         />
       ) : (
-        <div className="w-9 h-14 bg-white/5 rounded-sm flex-shrink-0 flex items-center justify-center">
+        <div className="w-9 h-14 bg-white/5 rounded-xs shrink-0 flex items-center justify-center">
           <span className="text-white/20 text-xs">?</span>
         </div>
       )}
@@ -205,7 +205,7 @@ function GameContent() {
             className="fixed inset-0 z-0"
           >
             <Image src={backdrop} alt="" fill className="object-cover" priority />
-            <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
+            <div className="absolute inset-0 bg-linear-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -257,7 +257,7 @@ function GameContent() {
           className="mb-8"
         >
           <FilmFrame>
-            <div className="border border-white/10 bg-cinema-card/80 backdrop-blur-sm px-6 py-5 mx-6">
+            <div className="border border-white/10 bg-cinema-card/80 backdrop-blur-xs px-6 py-5 mx-6">
               <p className="text-cinema-silver/40 text-xs tracking-[0.3em] uppercase text-center mb-4">
                 Connect
               </p>
@@ -367,7 +367,7 @@ function GameContent() {
                   value={movie}
                   onChange={(e) => setMovie(e.target.value)}
                   placeholder="e.g. The Dark Knight"
-                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cinema-gold/60 transition-colors"
+                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-hidden focus:border-cinema-gold/60 transition-colors"
                   required
                   disabled={loading}
                 />
@@ -382,7 +382,7 @@ function GameContent() {
                   value={nextActor}
                   onChange={(e) => setNextActor(e.target.value)}
                   placeholder="e.g. Heath Ledger"
-                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cinema-gold/60 transition-colors"
+                  className="w-full bg-cinema-card border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-hidden focus:border-cinema-gold/60 transition-colors"
                   required
                   disabled={loading}
                 />

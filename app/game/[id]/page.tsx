@@ -370,10 +370,10 @@ function MoveCard({
           alt={move.movie_title ?? ""}
           width={36}
           height={54}
-          className="object-cover flex-shrink-0 self-center"
+          className="object-cover shrink-0 self-center"
         />
       ) : (
-        <div className="w-9 h-14 bg-white/5 flex-shrink-0 self-center flex items-center justify-center">
+        <div className="w-9 h-14 bg-white/5 shrink-0 self-center flex items-center justify-center">
           <span className="text-white/20 text-xs">?</span>
         </div>
       )}
@@ -454,7 +454,7 @@ function MoveCard({
       {isLast && onUndo && (
         <button
           onClick={onUndo}
-          className="flex-shrink-0 self-start text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
+          className="shrink-0 self-start text-white/30 hover:text-cinema-gold text-xs transition-colors px-1"
           title="Undo last move"
         >
           ↩
@@ -718,7 +718,7 @@ export default function GamePage({ params }: { params: Promise<{ id: string }> }
             className="fixed inset-0 z-0"
           >
             <Image src={backdrop} alt="" fill className="object-cover" priority />
-            <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
+            <div className="absolute inset-0 bg-linear-to-t from-cinema-black via-cinema-black/85 to-cinema-black/60" />
           </motion.div>
         )}
       </AnimatePresence>
